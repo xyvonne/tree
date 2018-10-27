@@ -1,8 +1,11 @@
 #include <iostream>
 
+#include "ast.hh"
+
 int main(void)
 {
-  std::cout << "Hello world!" << std::endl;
+  auto ast = AST<int>();
+  std::cout << ast.zero() << std::endl;
   return 0;
 }
 
