@@ -3,6 +3,19 @@
 #include "ast.hh" // template class interface
 
 // AST implementation
+template <typename T>
+std::string default_print_leaf(T t)
+{
+  (void) t; // intented, as the signature cannot be changed
+  return " o";
+}
+
+template <typename T>
+std::string default_print_node(T t)
+{
+  (void) t; // intented, as the signature cannot be changed
+  return "[*]";
+}
 
 template <typename T>
 AST<T>::AST()
@@ -41,8 +54,11 @@ AST<U> AST<T>::map(U (*f)(T)) const //TODO
 }
 
 template <typename T>
-std::string AST<T>::to_string() const //TODO
+std::string AST<T>::to_string( \
+        std::string (*print_node)(T), std::string (*print_leaf)(T), \
+        unsigned dashes, unsigned spaces) const //TODO
 {
+  (void) print_node; (void) print_leaf; (void) dashes; (void) spaces; //TODO
   return {};
 }
 

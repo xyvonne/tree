@@ -28,6 +28,12 @@ class ASTNode
 
 // AST interface
 template <typename T>
+std::string default_print_leaf(T t);
+
+template <typename T>
+std::string default_print_node(T t);
+
+template <typename T>
 class AST
 {
   public:
@@ -42,7 +48,11 @@ class AST
     template <typename U>
       AST<U> map(U (*f)(T)) const;
 
-    std::string to_string() const;
+    std::string to_string( \
+        std::string (*print_node)(T) = default_print_node, \
+        std::string (*print_leaf)(T) = default_print_leaf, \
+        unsigned dashes = 2, \
+        unsigned spaces = 1) const;
 
     std::vector<T> pre_order_search() const;
     std::vector<T> post_order_search() const;
