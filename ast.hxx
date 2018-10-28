@@ -84,9 +84,12 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
 }
 
 template <typename T>
-std::vector<T> AST<T>::pre_order_search() const //TODO
+std::vector<T> AST<T>::pre_order_search() const
 {
-  return {};
+  std::vector<T> v;
+  for (const auto& node : nodes_)
+    v.push_back(node.first);
+  return v;
 }
 
 template <typename T>

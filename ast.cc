@@ -10,26 +10,26 @@ int main(void)
     = [](double x) { return std::to_string(x); };
   ASTPrintCompanion<double> pc(print_node);
 
-std::function<double(double)> f = [](double x){ return -x; };
+std::function<double(int)> f = [](int x){ return x+1; };
 
-#if 0
-auto ast2 = AST<double>(2);
-auto ast3 = AST<double>(3);
-auto ast4 = AST<double>(4);
-auto ast6 = AST<double>(6);
-auto ast7 = AST<double>(7);
-auto ast8 = AST<double>(8);
-auto ast9 = AST<double>(9);
-auto ast1 = AST<double>(1, {ast2, ast3, ast4});
-auto ast5 = AST<double>(5, {ast6, ast7});
-auto ast0 = AST<double>(0, {ast1, ast5, ast8, ast1, ast9});
+#if 1
+auto ast2 = AST<int>(2);
+auto ast3 = AST<int>(3);
+auto ast4 = AST<int>(4);
+auto ast6 = AST<int>(6);
+auto ast7 = AST<int>(7);
+auto ast8 = AST<int>(8);
+auto ast9 = AST<int>(9);
+auto ast1 = AST<int>(1, {ast2, ast3, ast4});
+auto ast5 = AST<int>(5, {ast6, ast7});
+auto ast0 = AST<int>(0, {ast1, ast5, ast8, ast1, ast9});
 
 auto ast = ast0.map(f);
 
 std::cout << "ast:\n" << ast.to_string(pc);
 #endif
 
-#if 1
+#if 0
   auto ast1 = BinaryAST<double>(2.5);
   std::function<double(double)> sqr = [](double x){ return x * x; };
   auto ast2(ast1);
@@ -49,11 +49,12 @@ std::cout << "ast:\n" << ast.to_string(pc);
   ast.pre_order_search();
   ast.post_order_search();
   ast.in_order_search();
+#endif
 
-  auto v = ast.breadth_first_search();
-  for (int e : v)
+  auto v = ast.pre_order_search();
+  for (auto e : v)
     std::cout << e << " ";
   std::cout << "\n";
-#endif
+
   return 0;
 }
