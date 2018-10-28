@@ -15,6 +15,7 @@ class BinaryAST : public AST<T>
   public:
   BinaryAST();
   BinaryAST(const T& t);
+  BinaryAST(const T& t, const BinaryAST<T>& left);
   BinaryAST(const T& t, const BinaryAST<T>& left, const BinaryAST<T>& right);
 
   template <typename U>

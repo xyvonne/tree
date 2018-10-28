@@ -15,6 +15,11 @@ BinaryAST<T>::BinaryAST(const T& t)
 {}
 
 template <typename T>
+BinaryAST<T>::BinaryAST(const T& t, const BinaryAST<T>& left)
+: AST<T>(t, {left})
+{}
+
+template <typename T>
 BinaryAST<T>::BinaryAST(const T& t, \
     const BinaryAST<T>& left, const BinaryAST<T>& right)
 : AST<T>(t, {left, right})

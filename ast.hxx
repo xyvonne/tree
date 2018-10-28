@@ -2,6 +2,10 @@
 
 #include "ast.hh" // template class interface
 
+#include <algorithm> // std::reverse
+#include <queue>
+#include <stack>
+
 #include "error.hh"
 
 /* AST implementation */
@@ -46,7 +50,7 @@ size_t AST<T>::root_arity() const
 {
   if (nodes_.size() == 0)
     throw EmptyTree("[ERROR]"\
-       " Calling AST<T>::root_arity() failed: Empty tree\n");
+        " Calling AST<T>::root_arity() failed: Empty tree\n");
   return nodes_[0].second.size() - 2;
 }
 
@@ -86,6 +90,10 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
 template <typename T>
 std::vector<T> AST<T>::pre_order_search() const
 {
+  /*
+   * Our implementation is such that all nodes are always already stored
+   * w.r.t pre-order search, so we only have to fetch their labels (values).
+   */
   std::vector<T> v;
   for (const auto& node : nodes_)
     v.push_back(node.first);
@@ -93,15 +101,73 @@ std::vector<T> AST<T>::pre_order_search() const
 }
 
 template <typename T>
-std::vector<T> AST<T>::post_order_search() const //TODO
+std::vector<T> AST<T>::post_order_search() const
 {
-  return {};
+  /*
+   * We make the search in an iterative way, using a stack.
+   * Although it is much more natural to use recursion here, this would
+   * probably require, due to our implementation, to get at each step the
+   * children as a collection of *newly made AST* in order to apply the
+   * recursion on them, which is far too expensive.
+   */
+  std::stack<size_t> stack;
+  std::vector<T> out;
+
+  // Push root's id onto the stack
+  size_t id = 0;
+  stack.push(id);
+
+  while (!stack.empty())
+  {
+    // Pop one node (id) from the stack, and add its value to the output
+    id = stack.top();
+    stack.pop();
+    out.push_back(nodes_[id].first);
+
+    // Add the children ids to the stack
+    const auto& v = nodes_[id].second;
+
+    for (size_t i = 2; i < v.size(); i++)
+      stack.push(v[i]);
+  }
+
+  // Reverse the output vector, so the root comes last
+  std::reverse(out.begin(), out.end());
+  return out;
 }
 
 template <typename T>
-std::vector<T> AST<T>::breadth_first_search() const //TODO
+std::vector<T> AST<T>::breadth_first_search() const
 {
-  return {};
+  /*
+   * We make the search in an iterative way, using a queue.
+   * Although it is much more natural to use recursion here, this would
+   * probably require, due to our implementation, to get at each step the
+   * children as a collection of *newly made AST* in order to apply the
+   * recursion on them, which is far too expensive.
+   */
+  std::queue<size_t> queue;
+  std::vector<T> out;
+
+  // Enqueue root's id
+  size_t id = 0;
+  queue.push(id);
+
+  while (!queue.empty())
+  {
+    // Pop one node (id) from the queue, and add its value to the output
+    id = queue.front();
+    queue.pop();
+    out.push_back(nodes_[id].first);
+
+    // Add the children ids to the stack
+    const auto& v = nodes_[id].second;
+
+    for (size_t i = 2; i < v.size(); i++)
+      queue.push(v[i]);
+  }
+
+  return out;
 }
 
 template <typename T>
