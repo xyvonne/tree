@@ -8,15 +8,24 @@
 /* AST interface */
 
 template <typename T>
+using Node = std::pair<T, std::vector<size_t>>;
+
+template <typename T>
+using Nodes = std::vector<Node<T>>;
+
+template <typename T>
 class AST
 {
-  public:
+  template <typename U>
+    friend class AST; // required for AST mapping
+
+public:
     AST();
     AST(const T& t, const std::vector<AST<T>>& children = {});
 
     T root() const;
 
-    unsigned root_arity() const;
+    size_t root_arity() const;
     std::vector<AST<T>> children() const;
 
     template <typename U>
@@ -27,7 +36,9 @@ class AST
     std::vector<T> pre_order_search() const;
     std::vector<T> post_order_search() const;
     std::vector<T> breadth_first_search() const;
+
   protected:
+    Nodes<T> nodes_;
 };
 
 template <typename T>

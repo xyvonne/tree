@@ -9,12 +9,18 @@
 template <typename T>
 class BinaryAST : public AST<T>
 {
-  public:
-    BinaryAST();
-    BinaryAST(const T& t);
-    BinaryAST(const T& t, const BinaryAST<T>& left, const BinaryAST<T>& right);
+  template <typename U>
+    friend class BinaryAST; // required for BinaryAST mapping
 
-    std::vector<T> in_order_search() const;
+  public:
+  BinaryAST();
+  BinaryAST(const T& t);
+  BinaryAST(const T& t, const BinaryAST<T>& left, const BinaryAST<T>& right);
+
+  template <typename U>
+    BinaryAST<U> map(std::function<U(T)> f) const;
+
+  std::vector<T> in_order_search() const;
 };
 
 #include "bin_ast.hxx" // template class implementation
