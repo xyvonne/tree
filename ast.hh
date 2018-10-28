@@ -1,58 +1,28 @@
 #pragma once
 
+#include <functional> // std::function
 #include <vector>
 
-// Type aliases
-using Id = std::vector<unsigned>;
+#include "ast_pc.hh"
 
-// Forward declarations
-template <typename T>
-class AST;
-
-template <typename T>
-class BinaryAST;
-
-// ASTNode interface
-template <typename T>
-class ASTNode
-{
-  friend AST<T>;
-  friend BinaryAST<T>;
-
-  public:
-
-  private:
-  T value_;
-  Id id_;
-};
-
-// AST interface
-template <typename T>
-std::string default_print_leaf(T t);
-
-template <typename T>
-std::string default_print_node(T t);
+/* AST interface */
 
 template <typename T>
 class AST
 {
   public:
     AST();
-    AST(T t, std::vector<AST<T>> sons = {});
+    AST(const T& t, const std::vector<AST<T>>& children = {});
 
     T root() const;
 
     unsigned root_arity() const;
-    std::vector<AST<T>> sons() const;
+    std::vector<AST<T>> children() const;
 
     template <typename U>
-      AST<U> map(U (*f)(T)) const;
+      AST<U> map(std::function<U(T)> f) const;
 
-    std::string to_string( \
-        std::string (*print_node)(T) = default_print_node, \
-        std::string (*print_leaf)(T) = default_print_leaf, \
-        unsigned dashes = 2, \
-        unsigned spaces = 1) const;
+    std::string to_string(const ASTPrintCompanion<T>& pc = {}) const;
 
     std::vector<T> pre_order_search() const;
     std::vector<T> post_order_search() const;
@@ -62,15 +32,5 @@ class AST
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const AST<T>& ast);
-
-// BinaryAST interface
-template <typename T>
-class BinaryAST : public AST<T>
-{
-  public:
-    BinaryAST();
-    BinaryAST(T t, std::vector<AST<T>> sons = {});
-    std::vector<T> in_order_search() const;
-};
 
 #include "ast.hxx" // template class implementation

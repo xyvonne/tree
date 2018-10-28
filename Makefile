@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++14
 
 #VPATH = src/ tests/
 
-OBJS = ast.o
+OBJS = ast.o error.o
 EXEC = ast
 
 all: $(EXEC)
