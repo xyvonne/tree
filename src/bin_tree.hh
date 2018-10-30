@@ -6,6 +6,11 @@
 
 /* BinaryTree interface */
 
+// TODO: documentation
+
+template <typename T>
+class Tree;
+
 template <typename T>
 class BinaryTree : public Tree<T>
 {
@@ -22,6 +27,13 @@ class BinaryTree : public Tree<T>
     BinaryTree<U> map(std::function<U(T)> f) const;
 
   std::vector<T> in_order_search() const;
+
+  protected:
+  /**
+   * Perform the in-order search on the BinaryTree,
+   * but return the node ids instead of the node values.
+   */
+  std::vector<size_t> in_order_search_ids() const;
 };
 
 #include "bin_tree.hxx" // template class implementation

@@ -5,6 +5,8 @@
 
 /* TreePrintCompanion interface */
 
+// TODO: documentation
+
 /// PrintFunction<T>: alias type for functions mapping T to std::string
 template <typename T>
 using PrintFunction = std::function<std::string(T)>;
@@ -22,7 +24,7 @@ template <typename T>
 class TreePrintCompanion
 {
   public:
-    /// Trivial constructor. TODO: describe the attributes
+    /// Trivial constructor.
     TreePrintCompanion( \
         const PrintFunction<T>& print_node = default_print_node<T>, \
         const PrintFunction<T>& print_leaf = default_print_leaf<T>, \

@@ -7,16 +7,40 @@
 
 /* Tree interface */
 
-//TODO: document what this class does
-
 /**
- * An Tree is implemented as follows. Its only attribute is the vector of its
- * nodes, sorted w.r.t. pre-order search. A node is a pair consisting in a
- * label (=value) and a vector of ids. The id of a node is its rank (starting
- * from 0) given by pre-order search. In the aforementioned vector of ids, the
- * parent id comes first (the parent of the root being the root itself); then
- * comes the id of the current node, and ltreely the ids of the node's children
- * (in ascending order).
+ * We are working with trees of any size and nodes having any possible arity
+ * (=number of children). The leaves are viewed as nodes with arity 0. All
+ * nodes (or node values, or labels) must be of the same type.
+ *
+ * The supported (=public) methods include:
+ * - the construction from the new root and the children trees;
+ * - access to the size and the depth (=height) of the tree;
+ * - information concerning the root: label, arity, and children (as whole
+ *   trees);
+ * - tree mapping;
+ * - developer-friendly representation and pretty-printing;
+ * - traversals: pre-, post-, and breadth-first searches. We chose to implement
+ *   them without using recursion, in order to practice with common STL
+ *   structures (vectors, stacks, queues).
+ * Methods concerning a specific node other than the root are not part of
+ * the interface. In particular, it is not possible to remove a node or a
+ * subtree, nor to add a new node anywhere else than on the top of the tree.
+ *
+ *  As a special category of trees, binary trees are implemented through the
+ *  derived class BinaryTree<T>. Please refer to "bin_tree.hh" for more
+ *  details.
+ *
+ * A (generic) tree is implemented as follows. Its only attribute is the
+ * vector of its nodes, sorted w.r.t. pre-order search. A node is a pair
+ * consisting of a label (=value) and a vector of ids. The id of a node is its
+ * rank (starting from 0) given by pre-order search. In the aforementioned
+ * vector of ids, the parent id comes first (the parent of the root being the
+ * root itself); then comes the id of the current node, and lastly the ids of
+ * the node's children (in ascending order).
+ * For access to children, we rejected the common implementation with pointers,
+ * because for tree mapping in particular, we want this accessing type be
+ * independent from T (the type labelling nodes), and we did not want to use
+ * the void* type in C++ either.
  */
 
 /// Type aliases
@@ -31,10 +55,10 @@ template <typename T>
 class Tree
 {
   template <typename U>
-    friend class Tree; // required for Tree mapping
+    friend class Tree; // required for tree mapping
 
   public:
-  /// Contruct an empty Tree.
+  /// Contruct an empty tree.
   Tree();
 
   /**
@@ -43,50 +67,50 @@ class Tree
    */
   Tree(const T& root, const std::vector<Tree<T>>& children = {});
 
-  /// Size of the Tree (i.e., its number of nodes).
+  /// Size of the tree (i.e., its number of nodes).
   size_t size() const;
 
-  /// Depth (=height) of the Tree. Equals -1 for an empty Tree.
+  /// Depth (=height) of the tree. Equals -1 for an empty tree.
   ssize_t depth() const;
 
   /**
    * Get the label of the root.
-   * If the Tree is empty, an EmptyTree() exception is thrown.
+   * If the tree is empty, an EmptyTree() exception is thrown.
    */
   T root() const;
 
   /**
    * Get the arity (i.e., the number of children) of the root.
-   * If the Tree is empty, an EmptyTree() exception is thrown.
+   * If the tree is empty, an EmptyTree() exception is thrown.
    */
   size_t root_arity() const;
 
   /**
-   * Get the children of the root, as a vector of new Trees.
-   * If the Tree is empty, an EmptyTree() exception is thrown.
+   * Get the children of the root, as a vector of new trees.
+   * If the tree is empty, an EmptyTree() exception is thrown.
    */
-  std::vector<Tree<T>> children() const;
+  std::vector<Tree<T>> root_children() const;
 
   /**
-   * Tree mapping: apply a map f to all nodes of the Tree.
-   * The result is a new Tree with same shape.
+   * Tree mapping: apply a map f to all nodes of the tree.
+   * The result is a new tree with same shape.
    */
   template <typename U>
-    Tree<U> map(std::function<U(T)> f) const;
+  Tree<U> map(std::function<U(T)> f) const;
 
   /**
-   * Developper-friendly representation of the Tree
+   * Developper-friendly representation of the tree
    * (Python's equivalent of __repr__()).
-   * Lists all the nodes w.r.t. pre-order search,
+   * List all the nodes w.r.t. pre-order search,
    * along with their values and ids.
-   * The TreePrintCompanion specifies how the leaves and the inner nodes
-   * must be represented;
+   * The TreePrintCompanion specifies how the root, leaves and other inner
+   * nodes must be represented;
    * please refer to the "tree_pc.hh" file for more details.
    */
   std::string represent(const TreePrintCompanion<T>& pc = {}) const;
 
   /**
-   * User-friendly representation of the Tree
+   * User-friendly representation of the tree
    * (Python's equivalent of __str__()).
    * The result is very similar to the UNIX/DOS 'tree' utility's
    * representation of a filesystem hierarchy.
@@ -96,19 +120,19 @@ class Tree
    */
   std::string to_string(const TreePrintCompanion<T>& pc = {}) const;
 
-  /// Perform the pre-order search on the Tree.
+  /// Perform the pre-order search on the tree.
   std::vector<T> pre_order_search() const;
 
-  /// Perform the post-order search on the Tree.
+  /// Perform the post-order search on the tree.
   std::vector<T> post_order_search() const;
 
-  /// Perform the breadth-first search (BFS) on the Tree.
+  /// Perform the breadth-first search (BFS) on the tree.
   std::vector<T> breadth_first_search() const;
 
   protected:
   /**
-   * The nodes of the Tree, stored in a vector
-   * (the full implementation of the nodes has been already discussed).
+   * The nodes of the tree, stored in a vector
+   * (the full implementation of the nodes has been already discussed above).
    */
   Nodes<T> nodes_;
 
@@ -119,7 +143,7 @@ class Tree
   bool is_leaf(size_t id) const;
 
   /**
-   * Perform the post-order search and breath-first search on the Tree,
+   * Perform the post-order search and breath-first search on the tree,
    * but return the node ids instead of the node values.
    */
   std::vector<size_t> post_order_search_ids() const;
@@ -127,23 +151,22 @@ class Tree
 
   /**
    * Return a vector telling whether each node (given by its id) is its
-   * parent's ltree child, or not.
-   * By convention, the root is its parent's ltree child.
-   * There are as many ltree children as there are inner nodes.
+   * parent's last tree child, or not.
+   * By convention, the root is its parent's last child.
+   * There are as many last children as there are inner nodes.
    */
-  std::vector<bool> ltree_children() const;
+  std::vector<bool> last_children() const;
 
   /**
-   * Return a vector containing the depth (or height) for each node
-   * (given by its id) in the Tree. The root has depth 0.
+   * Return a vector containing the depth for each node
+   * (given by its id) in the tree. The root has depth 0.
    */
   std::vector<size_t> node_depths() const;
 };
 
 /**
- * Overload the << operator for pretty-printing purposes. Calls
- * Tree<T>::to_string() without parameter (i.e., use the default
- * TreePrintCompanion).
+ * Overload the << operator for pretty-printing. Calls Tree<T>::to_string()
+ * without parameter (i.e., use the default TreePrintCompanion).
  */
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tree<T>& tree);

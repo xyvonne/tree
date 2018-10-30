@@ -22,7 +22,7 @@ template <typename T>
 std::string default_print_root(const T& t)
 {
   (void) t; // intended, as the signature cannot be changed
-  return "[[ROOT]]";
+  return ".";
 }
 
 template <typename T>

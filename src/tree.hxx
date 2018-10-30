@@ -54,6 +54,15 @@ size_t Tree<T>::root_arity() const
 }
 
 template <typename T>
+std::vector<Tree<T>> Tree<T>::root_children() const // TODO
+{
+  if (size() == 0)
+    throw EmptyTree("[ERROR]" \
+        " Calling Tree<T>::root_children() failed: Empty tree\n");
+  return {};
+}
+
+template <typename T>
 template <typename U>
 Tree<U> Tree<T>::map(std::function<U(T)> f) const
 {
@@ -117,7 +126,7 @@ std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
   std::string tee = "\u251c"; // ├
 
   /* Print the other nodes. */
-  auto lc = ltree_children();
+  auto lc = last_children();
   for (size_t i = 1; i < size(); i++)
   {
     /* Print the vertical lines and the horizontal lines/spaces. */
@@ -127,7 +136,7 @@ std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
         s += (printable_columns[j] ? vline : " ") + tab;
 
     /* Print the tees and the hooks. */
-    if (lc[i]) // lc = ltree_children()
+    if (lc[i]) // lc = last_children()
     {
       s += hook;
       printable_columns[j++] = false;
@@ -195,7 +204,7 @@ std::vector<size_t> Tree<T>::post_order_search_ids() const
       stack.push(v[i]);
   }
 
-  /* Reverse the output vector, so the root comes ltree. */
+  /* Reverse the output vector, so the root comes last. */
   std::reverse(out.begin(), out.end());
   return out;
 }
@@ -257,7 +266,7 @@ std::vector<T> Tree<T>::breadth_first_search() const
 }
 
 template <typename T>
-std::vector<bool> Tree<T>::ltree_children() const
+std::vector<bool> Tree<T>::last_children() const
 {
   if (size() == 0)
     return {};
@@ -267,7 +276,7 @@ std::vector<bool> Tree<T>::ltree_children() const
   for (size_t i = 0; i < size(); i++)
     if (!is_leaf(i))
     {
-      size_t j = nodes_[i].second.back(); // nodes_[i]'s ltree child id
+      size_t j = nodes_[i].second.back(); // nodes_[i]'s last child id
       out[j] = true;
     }
   return out;
