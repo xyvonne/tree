@@ -46,7 +46,7 @@ class AST
   /// Size of the AST (i.e., its number of nodes).
   size_t size() const;
 
-  // Depth (=height) of the AST. Equals -1 for an empty AST.
+  /// Depth (=height) of the AST. Equals -1 for an empty AST.
   ssize_t depth() const;
 
   /**
@@ -132,14 +132,6 @@ class AST
    * There are as many last children as there are inner nodes.
    */
   std::vector<bool> last_children() const;
-
-  /**
-   * Return a vector telling whether each node (given by its id) is
-   * the last to be seen at a given depth during a BFS (or not).
-   * The numberi of "last children of last children" is equal to the
-   * depth of the AST.
-   */
-  std::vector<bool> last_children_of_last_children() const;
 
   /**
    * Return a vector containing the depth (or height) for each node

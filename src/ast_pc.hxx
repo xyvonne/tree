@@ -2,7 +2,7 @@
 
 #include "ast_pc.hh" // template class interface
 
-/* ASTPrinterCompanion implementation */
+/* ASTPrintCompanion implementation */
 
 template <typename T>
 std::string default_print_leaf(const T& t)
@@ -30,8 +30,8 @@ ASTPrintCompanion<T>::ASTPrintCompanion( \
     const PrintFunction<T>& print_node, \
     const PrintFunction<T>& print_leaf, \
     const PrintFunction<T>& print_root, \
-    unsigned dashes, \
-    unsigned spaces)
+    int dashes, \
+    int spaces)
 : print_leaf_(print_leaf), print_node_(print_node), print_root_(print_root), \
     dashes_(dashes), spaces_(spaces)
 {}
@@ -55,13 +55,13 @@ PrintFunction<T> ASTPrintCompanion<T>::print_root() const
 }
 
 template <typename T>
-unsigned ASTPrintCompanion<T>::dashes() const
+int ASTPrintCompanion<T>::dashes() const
 {
   return dashes_;
 }
 
 template <typename T>
-unsigned ASTPrintCompanion<T>::spaces() const
+int ASTPrintCompanion<T>::spaces() const
 {
   return spaces_;
 }

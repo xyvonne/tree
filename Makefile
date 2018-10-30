@@ -1,7 +1,7 @@
 CC = g++
 CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++17
 
-#VPATH = src/ tests/
+VPATH = src/ tests/
 
 OBJS = ast.o error.o
 EXEC = ast
