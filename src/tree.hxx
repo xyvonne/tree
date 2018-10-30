@@ -1,20 +1,20 @@
 #pragma once
 
-#include "ast.hh" // template class interface
+#include "tree.hh" // template class interface
 
 #include <queue>
 #include <stack>
 
 #include "error.hh"
 
-/* AST implementation */
+/* Tree implementation */
 
 template <typename T>
-AST<T>::AST()
+Tree<T>::Tree()
 {}
 
 template <typename T>
-AST<T>::AST(const T& root, const std::vector<AST<T>>& children)
+Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
   : nodes_{{root, {0, 0}}} // parent's root is itself and has id = 0
 {
   size_t offset = 1; // node reindexing counter
@@ -37,34 +37,34 @@ AST<T>::AST(const T& root, const std::vector<AST<T>>& children)
 }
 
 template <typename T>
-T AST<T>::root() const
+T Tree<T>::root() const
 {
   if (size() == 0)
-    throw EmptyTree("[ERROR] Calling AST<T>::root() failed: Empty tree\n");
+    throw EmptyTree("[ERROR] Calling Tree<T>::root() failed: Empty tree\n");
   return nodes_[0].first;
 }
 
 template <typename T>
-size_t AST<T>::root_arity() const
+size_t Tree<T>::root_arity() const
 {
   if (size() == 0)
     throw EmptyTree("[ERROR]" \
-        " Calling AST<T>::root_arity() failed: Empty tree\n");
+        " Calling Tree<T>::root_arity() failed: Empty tree\n");
   return nodes_[0].second.size() - 2;
 }
 
 template <typename T>
 template <typename U>
-AST<U> AST<T>::map(std::function<U(T)> f) const
+Tree<U> Tree<T>::map(std::function<U(T)> f) const
 {
-  AST<U> ast;
+  Tree<U> tree;
   for (const auto& node : nodes_)
-    ast.AST<U>::nodes_.push_back({f(node.first), node.second});
-  return ast;
+    tree.Tree<U>::nodes_.push_back({f(node.first), node.second});
+  return tree;
 }
 
 template <typename T>
-std::string AST<T>::represent(const ASTPrintCompanion<T>& pc) const
+std::string Tree<T>::represent(const TreePrintCompanion<T>& pc) const
 {
   std::string s;
   for (const auto& node : nodes_)
@@ -78,7 +78,7 @@ std::string AST<T>::represent(const ASTPrintCompanion<T>& pc) const
       s += pc.print_leaf()(t);
     else
       s += pc.print_node()(t);
-    s += " | Ids: [";
+    s += " | ids: [";
     for (const auto& id : node.second)
       s += std::to_string(id) + ", ";
     s += "\b\b]\n";
@@ -87,7 +87,7 @@ std::string AST<T>::represent(const ASTPrintCompanion<T>& pc) const
 }
 
 template <typename T>
-std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
+std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
 {
   if (size() == 0)
     return {};
@@ -117,7 +117,7 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
   std::string tee = "\u251c"; // ├
 
   /* Print the other nodes. */
-  auto lc = last_children();
+  auto lc = ltree_children();
   for (size_t i = 1; i < size(); i++)
   {
     /* Print the vertical lines and the horizontal lines/spaces. */
@@ -127,7 +127,7 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
         s += (printable_columns[j] ? vline : " ") + tab;
 
     /* Print the tees and the hooks. */
-    if (lc[i]) // lc = last_children()
+    if (lc[i]) // lc = ltree_children()
     {
       s += hook;
       printable_columns[j++] = false;
@@ -150,7 +150,7 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
 }
 
 template <typename T>
-std::vector<T> AST<T>::pre_order_search() const
+std::vector<T> Tree<T>::pre_order_search() const
 {
   /*
    * Recall that our implementation is such that all nodes are already stored
@@ -163,13 +163,13 @@ std::vector<T> AST<T>::pre_order_search() const
 }
 
 template <typename T>
-std::vector<size_t> AST<T>::post_order_search_ids() const
+std::vector<size_t> Tree<T>::post_order_search_ids() const
 {
   /*
    * We make the search in an iterative way, using a stack.
    * Although it is much more natural to use recursion here, this would
    * probably require, due to our implementation, to get at each step the
-   * children as a collection of *newly made AST* in order to apply the
+   * children as a collection of *newly made Tree* in order to apply the
    * recursion on them, which is far too expensive.
    */
  if (size() == 0)
@@ -195,13 +195,13 @@ std::vector<size_t> AST<T>::post_order_search_ids() const
       stack.push(v[i]);
   }
 
-  /* Reverse the output vector, so the root comes last. */
+  /* Reverse the output vector, so the root comes ltree. */
   std::reverse(out.begin(), out.end());
   return out;
 }
 
 template <typename T>
-std::vector<T> AST<T>::post_order_search() const
+std::vector<T> Tree<T>::post_order_search() const
 {
   std::vector<size_t> sorted_ids = post_order_search_ids();
   std::vector<T> out;
@@ -211,13 +211,13 @@ std::vector<T> AST<T>::post_order_search() const
 }
 
 template <typename T>
-std::vector<size_t> AST<T>::breadth_first_search_ids() const
+std::vector<size_t> Tree<T>::breadth_first_search_ids() const
 {
   /*
    * We make the search in an iterative way, using a queue.
    * Although it is much more natural to use recursion here, this would
    * probably require, due to our implementation, to get at each step the
-   * children as a collection of *newly made AST* in order to apply the
+   * children as a collection of *newly made Tree* in order to apply the
    * recursion on them, which is far too expensive.
    */
   if (size() == 0)
@@ -247,7 +247,7 @@ std::vector<size_t> AST<T>::breadth_first_search_ids() const
 }
 
 template <typename T>
-std::vector<T> AST<T>::breadth_first_search() const
+std::vector<T> Tree<T>::breadth_first_search() const
 {
   std::vector<size_t> sorted_ids = breadth_first_search_ids();
   std::vector<T> out;
@@ -257,7 +257,7 @@ std::vector<T> AST<T>::breadth_first_search() const
 }
 
 template <typename T>
-std::vector<bool> AST<T>::last_children() const
+std::vector<bool> Tree<T>::ltree_children() const
 {
   if (size() == 0)
     return {};
@@ -267,14 +267,14 @@ std::vector<bool> AST<T>::last_children() const
   for (size_t i = 0; i < size(); i++)
     if (!is_leaf(i))
     {
-      size_t j = nodes_[i].second.back(); // nodes_[i]'s last child id
+      size_t j = nodes_[i].second.back(); // nodes_[i]'s ltree child id
       out[j] = true;
     }
   return out;
 }
 
 template <typename T>
-std::vector<size_t> AST<T>::node_depths() const
+std::vector<size_t> Tree<T>::node_depths() const
 {
   /**
    * To compute the depth of node, we just we follow the path from this node
@@ -294,7 +294,7 @@ std::vector<size_t> AST<T>::node_depths() const
 }
 
 template <typename T>
-ssize_t AST<T>::depth() const
+ssize_t Tree<T>::depth() const
 {
   if (size() == 0)
     return -1;
@@ -308,19 +308,19 @@ ssize_t AST<T>::depth() const
 }
 
 template <typename T>
-size_t AST<T>::size() const
+size_t Tree<T>::size() const
 {
   return nodes_.size();
 }
 
 template <typename T>
-bool AST<T>::is_leaf(size_t id) const
+bool Tree<T>::is_leaf(size_t id) const
 {
   return id < size() and nodes_[id].second.size() <= 2;
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const AST<T>& ast)
+std::ostream& operator<<(std::ostream& os, const Tree<T>& tree)
 {
-  return os << ast.to_string();
+  return os << tree.to_string();
 }

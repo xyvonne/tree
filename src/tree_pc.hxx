@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ast_pc.hh" // template class interface
+#include "tree_pc.hh" // template class interface
 
-/* ASTPrintCompanion implementation */
+/* TreePrintCompanion implementation */
 
 template <typename T>
 std::string default_print_leaf(const T& t)
@@ -26,7 +26,7 @@ std::string default_print_root(const T& t)
 }
 
 template <typename T>
-ASTPrintCompanion<T>::ASTPrintCompanion( \
+TreePrintCompanion<T>::TreePrintCompanion( \
     const PrintFunction<T>& print_node, \
     const PrintFunction<T>& print_leaf, \
     const PrintFunction<T>& print_root, \
@@ -37,31 +37,31 @@ ASTPrintCompanion<T>::ASTPrintCompanion( \
 {}
 
 template <typename T>
-PrintFunction<T> ASTPrintCompanion<T>::print_leaf() const
+PrintFunction<T> TreePrintCompanion<T>::print_leaf() const
 {
   return print_leaf_;
 }
 
 template <typename T>
-PrintFunction<T> ASTPrintCompanion<T>::print_node() const
+PrintFunction<T> TreePrintCompanion<T>::print_node() const
 {
   return print_node_;
 }
 
 template <typename T>
-PrintFunction<T> ASTPrintCompanion<T>::print_root() const
+PrintFunction<T> TreePrintCompanion<T>::print_root() const
 {
   return print_root_;
 }
 
 template <typename T>
-int ASTPrintCompanion<T>::dashes() const
+int TreePrintCompanion<T>::dashes() const
 {
   return dashes_;
 }
 
 template <typename T>
-int ASTPrintCompanion<T>::spaces() const
+int TreePrintCompanion<T>::spaces() const
 {
   return spaces_;
 }

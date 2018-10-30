@@ -3,7 +3,7 @@
 #include <functional> // std::function
 #include <vector>
 
-/* ASTPrintCompanion interface */
+/* TreePrintCompanion interface */
 
 /// PrintFunction<T>: alias type for functions mapping T to std::string
 template <typename T>
@@ -19,11 +19,11 @@ std::string default_print_node(const T& t);
 
 /// The class itself
 template <typename T>
-class ASTPrintCompanion
+class TreePrintCompanion
 {
   public:
     /// Trivial constructor. TODO: describe the attributes
-    ASTPrintCompanion( \
+    TreePrintCompanion( \
         const PrintFunction<T>& print_node = default_print_node<T>, \
         const PrintFunction<T>& print_leaf = default_print_leaf<T>, \
         const PrintFunction<T>& print_root = default_print_root<T>, \
@@ -46,4 +46,4 @@ class ASTPrintCompanion
     const int spaces_;
 };
 
-#include "ast_pc.hxx" // template class implementation
+#include "tree_pc.hxx" // template class implementation
