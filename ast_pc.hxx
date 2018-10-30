@@ -7,22 +7,32 @@
 template <typename T>
 std::string default_print_leaf(const T& t)
 {
-  (void) t; // intented, as the signature cannot be changed
-  return " o";
+  (void) t; // intended, as the signature cannot be changed
+  return "o";
 }
 
 template <typename T>
 std::string default_print_node(const T& t)
 {
-  (void) t; // intented, as the signature cannot be changed
+  (void) t; // intended, as the signature cannot be changed
   return "[*]";
 }
 
 template <typename T>
+std::string default_print_root(const T& t)
+{
+  (void) t; // intended, as the signature cannot be changed
+  return "[[ROOT]]";
+}
+
+template <typename T>
 ASTPrintCompanion<T>::ASTPrintCompanion( \
-    PrintFunction<T> print_node, PrintFunction<T> print_leaf,
-    unsigned dashes, unsigned spaces)
-: print_leaf_(print_leaf), print_node_(print_node), \
+    const PrintFunction<T>& print_node, \
+    const PrintFunction<T>& print_leaf, \
+    const PrintFunction<T>& print_root, \
+    unsigned dashes, \
+    unsigned spaces)
+: print_leaf_(print_leaf), print_node_(print_node), print_root_(print_root), \
     dashes_(dashes), spaces_(spaces)
 {}
 
@@ -36,6 +46,12 @@ template <typename T>
 PrintFunction<T> ASTPrintCompanion<T>::print_node() const
 {
   return print_node_;
+}
+
+template <typename T>
+PrintFunction<T> ASTPrintCompanion<T>::print_root() const
+{
+  return print_root_;
 }
 
 template <typename T>

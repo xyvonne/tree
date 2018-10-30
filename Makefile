@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++14
+CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++17
 
 #VPATH = src/ tests/
 

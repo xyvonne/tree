@@ -2,7 +2,6 @@
 
 #include "ast.hh" // template class interface
 
-#include <algorithm> // std::reverse
 #include <queue>
 #include <stack>
 
@@ -10,13 +9,13 @@
 
 /* AST implementation */
 
-template <typename T>
+  template <typename T>
 AST<T>::AST()
 {}
 
-template <typename T>
-AST<T>::AST(const T& t, const std::vector<AST<T>>& children)
-  : nodes_{{t, {0, 0}}} // root is itself's parent and has id = 0
+  template <typename T>
+AST<T>::AST(const T& root, const std::vector<AST<T>>& children)
+  : nodes_{{root, {0, 0}}} // parent's root is itself and has id = 0
 {
   size_t offset = 1; // node reindexing counter
   for (auto child : children)
@@ -30,17 +29,17 @@ AST<T>::AST(const T& t, const std::vector<AST<T>>& children)
     }
     child.nodes_[0].second[0] = 0; // root is child's parent
 
-    // add all child tree structure to root
+    // add the whole child tree structure to root
     nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
 
-    offset += child.nodes_.size(); // update node reindexing counter
+    offset += child.size(); // update node reindexing counter
   }
 }
 
 template <typename T>
 T AST<T>::root() const
 {
-  if (nodes_.size() == 0)
+  if (size() == 0)
     throw EmptyTree("[ERROR] Calling AST<T>::root() failed: Empty tree\n");
   return nodes_[0].first;
 }
@@ -48,16 +47,10 @@ T AST<T>::root() const
 template <typename T>
 size_t AST<T>::root_arity() const
 {
-  if (nodes_.size() == 0)
-    throw EmptyTree("[ERROR]"\
+  if (size() == 0)
+    throw EmptyTree("[ERROR]" \
         " Calling AST<T>::root_arity() failed: Empty tree\n");
   return nodes_[0].second.size() - 2;
-}
-
-template <typename T>
-std::vector<AST<T>> AST<T>::children() const //TODO
-{
-  return {};
 }
 
 template <typename T>
@@ -71,14 +64,20 @@ AST<U> AST<T>::map(std::function<U(T)> f) const
 }
 
 template <typename T>
-std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
+std::string AST<T>::represent(const ASTPrintCompanion<T>& pc) const
 {
-  // This is a basic pretty-printing. TODO: pretty-pretting v2
   std::string s;
   for (const auto& node : nodes_)
   {
     s += "Node #" + std::to_string(node.second[1]);
-    s += ": value: " + pc.print_node()(node.first);
+    s += ": value: ";
+    T t = node.first;
+    if (node.second[1] == 0) // node.second[1]: node's id; 0 = root's id
+      s += pc.print_root()(t);
+    else if (is_leaf(node.second[1]))
+      s += pc.print_leaf()(t);
+    else
+      s += pc.print_node()(t);
     s += " | Ids: [";
     for (const auto& id : node.second)
       s += std::to_string(id) + ", ";
@@ -88,11 +87,19 @@ std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const
 }
 
 template <typename T>
+std::string AST<T>::to_string(const ASTPrintCompanion<T>& pc) const // TODO
+{
+  std::string s;
+  (void) pc; //TODO
+  return s;
+}
+
+template <typename T>
 std::vector<T> AST<T>::pre_order_search() const
 {
   /*
-   * Our implementation is such that all nodes are always already stored
-   * w.r.t pre-order search, so we only have to fetch their labels (values).
+   * Recall that our implementation is such that all nodes are already stored
+   * w.r.t. pre-order search, so we only have to fetch their labels (values).
    */
   std::vector<T> v;
   for (const auto& node : nodes_)
@@ -101,7 +108,7 @@ std::vector<T> AST<T>::pre_order_search() const
 }
 
 template <typename T>
-std::vector<T> AST<T>::post_order_search() const
+std::vector<size_t> AST<T>::post_order_search_ids() const
 {
   /*
    * We make the search in an iterative way, using a stack.
@@ -111,7 +118,7 @@ std::vector<T> AST<T>::post_order_search() const
    * recursion on them, which is far too expensive.
    */
   std::stack<size_t> stack;
-  std::vector<T> out;
+  std::vector<size_t> out;
 
   // Push root's id onto the stack
   size_t id = 0;
@@ -119,14 +126,13 @@ std::vector<T> AST<T>::post_order_search() const
 
   while (!stack.empty())
   {
-    // Pop one node (id) from the stack, and add its value to the output
+    // Pop one node id from the stack, and add it to the output
     id = stack.top();
     stack.pop();
-    out.push_back(nodes_[id].first);
+    out.push_back(id);
 
     // Add the children ids to the stack
     const auto& v = nodes_[id].second;
-
     for (size_t i = 2; i < v.size(); i++)
       stack.push(v[i]);
   }
@@ -137,7 +143,17 @@ std::vector<T> AST<T>::post_order_search() const
 }
 
 template <typename T>
-std::vector<T> AST<T>::breadth_first_search() const
+std::vector<T> AST<T>::post_order_search() const
+{
+  std::vector<size_t> sorted_ids = post_order_search_ids();
+  std::vector<T> out;
+  for (const auto& id : sorted_ids)
+    out.push_back(nodes_[id].first);
+  return out;
+}
+
+template <typename T>
+std::vector<size_t> AST<T>::breadth_first_search_ids() const
 {
   /*
    * We make the search in an iterative way, using a queue.
@@ -147,7 +163,7 @@ std::vector<T> AST<T>::breadth_first_search() const
    * recursion on them, which is far too expensive.
    */
   std::queue<size_t> queue;
-  std::vector<T> out;
+  std::vector<size_t> out;
 
   // Enqueue root's id
   size_t id = 0;
@@ -155,14 +171,13 @@ std::vector<T> AST<T>::breadth_first_search() const
 
   while (!queue.empty())
   {
-    // Pop one node (id) from the queue, and add its value to the output
+    // Pop one node id from the queue, and add it to the output
     id = queue.front();
     queue.pop();
-    out.push_back(nodes_[id].first);
+    out.push_back(id);
 
-    // Add the children ids to the stack
+    // Add the children ids to the queue
     const auto& v = nodes_[id].second;
-
     for (size_t i = 2; i < v.size(); i++)
       queue.push(v[i]);
   }
@@ -171,6 +186,103 @@ std::vector<T> AST<T>::breadth_first_search() const
 }
 
 template <typename T>
+std::vector<T> AST<T>::breadth_first_search() const
+{
+  std::vector<size_t> sorted_ids = breadth_first_search_ids();
+  std::vector<T> out;
+  for (const auto& id : sorted_ids)
+    out.push_back(nodes_[id].first);
+  return out;
+}
+
+template <typename T>
+std::vector<bool> AST<T>::last_children_of_last_children() const
+{
+  if (size() == 0)
+    return {};
+
+  std::vector<bool> out(size(), false);
+  out[0] = true;
+  size_t i = 0;
+  while (!is_leaf(i))
+  {
+    i = nodes_[i].second.back();
+    out[i] = true;
+  }
+  return out;
+}
+
+template <typename T>
+std::vector<bool> AST<T>::last_children() const
+{
+  if (size() == 0)
+    return {};
+
+  std::vector<bool> out(size(), false);
+  out[0] = true;
+  for (size_t i = 0; i < size(); i++)
+    if (!is_leaf(i))
+    {
+      size_t j = nodes_[i].second.back(); // nodes_[i]'s last child id
+      out[j] = true;
+    }
+  return out;
+}
+
+template <typename T>
+std::vector<size_t> AST<T>::node_depths() const
+{
+  if (size() == 0)
+    return {};
+
+  std::vector<size_t> out(size(), 0); // vector of size size() filled with 0s
+  std::vector<size_t> BFS = breadth_first_search_ids();
+  size_t depth = 0;
+  auto lclc = last_children_of_last_children();
+  for (size_t i = 0; i < size(); i++)
+  {
+    size_t j = BFS[i];
+    out[j] = depth;
+    if (lclc[j])
+      depth++;
+  }
+
+  return out;
+}
+
+template <typename T>
+ssize_t AST<T>::depth() const
+{
+  if (size() == 0)
+    return -1;
+
+  /*
+   * If the AST is not empty, we find the id of the deepest node by performing
+   * a BFS and taking the id of the last node found.
+   * Next, we follow the path from this node up to the root, and compute the
+   * length of this path.
+   */
+  ssize_t depth = 0;
+  for (size_t i = breadth_first_search_ids().back(); i != 0; \
+      i = nodes_[i].second[0])
+    depth++;
+
+  return depth;
+}
+
+template <typename T>
+size_t AST<T>::size() const
+{
+    return nodes_.size();
+}
+
+template <typename T>
+bool AST<T>::is_leaf(size_t id) const
+{
+  return id < size() and nodes_[id].second.size() <= 2;
+}
+
+  template <typename T>
 std::ostream& operator<<(std::ostream& os, const AST<T>& ast)
 {
   return os << ast.to_string();
