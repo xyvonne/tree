@@ -2,9 +2,9 @@
 #include <iostream>
 #include <system_error>
 
-#include "../read_dir/read_dir.hh"
-#include "../tree/bin_tree.hh"
-#include "../tree/error.hh"
+#include "../../include/read_dir/read_dir.hh"
+#include "../../include/tree/bin_tree.hh"
+#include "../../include/tree/tree_error.hh"
 
 /* Type aliases. */
 using String = std::string;

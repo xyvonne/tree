@@ -5,7 +5,7 @@
 #include <system_error>
 #include <vector>
 
-#include "read_dir.hh"
+#include "../../include/read_dir/read_dir.hh"
 
 DirectoryReader::DirectoryReader(const Path& path)
   : path_(path)

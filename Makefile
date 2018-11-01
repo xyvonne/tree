@@ -1,15 +1,27 @@
-CC = g++
+CXX = g++
 CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++17
 
-VPATH = src/demo src/error/ src/evalexpr src/read_dir/ src/tree/
+VPATH = src/read_dir/ src/tree/ #src/eval_expr
 
-OBJS = error.o read_dir.o demo.o
-EXEC = demo
+#EVAL_OBJS = eval.o eval_error.o eval_tree.o lexer.o operator.o
+#EVAL_OBJS += parser.o preprocessor.o
+RD_OBJS = read_dir.o rd.o
+TREE_OBJS = tree_error.o
+TREE_DEMO_OBJS = $(TREE_OBJS) tree_demo.o
+OBJS = $(RD_OBJS) $(TREE_OBJS) #(EVAL_OBJS)
+
+EXEC = rd #tree_demo eval
 
 all: $(EXEC)
 
-$(EXEC): $(OBJS)
-	$(CC) $^ -o $@
+rd: $(RD_OBJS) $(TREE_OBJS)
+	$(CXX) $^ -o $@
+
+#eval: $(EVAL_OBJS) $(TREE_OBJS)
+#	$(CXX) $^ -o $@
+
+#demo: $(TREE_DEMO_OBJS)
+#	$(CXX) $^ -o $@
 
 clean: $(EXEC) $(OBJS)
 	${RM} $^
