@@ -8,19 +8,19 @@ VPATH = src/read_dir/ src/tree/ #src/eval_expr
 RD_OBJS = read_dir.o rd.o
 TREE_OBJS = tree_error.o
 TREE_DEMO_OBJS = $(TREE_OBJS) tree_demo.o
-OBJS = $(RD_OBJS) $(TREE_OBJS) #(EVAL_OBJS)
+OBJS = $(RD_OBJS) $(TREE_DEMO_OBJS) #(EVAL_OBJS)
 
-EXEC = rd #tree_demo eval
+EXEC = rd tree_demo #eval
 
 all: $(EXEC)
 
 rd: $(RD_OBJS) $(TREE_OBJS)
 	$(CXX) $^ -o $@
 
-#eval: $(EVAL_OBJS) $(TREE_OBJS)
-#	$(CXX) $^ -o $@
+tree_demo: $(TREE_DEMO_OBJS)
+	$(CXX) $^ -o $@
 
-#demo: $(TREE_DEMO_OBJS)
+#eval: $(EVAL_OBJS) $(TREE_OBJS)
 #	$(CXX) $^ -o $@
 
 clean: $(EXEC) $(OBJS)

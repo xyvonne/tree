@@ -63,7 +63,7 @@ Table<String> DirectoryReader::table() const
 std::vector<String> DirectoryReader::subdirectories(const String& current_dir)
 {
   /* Try to open the directory. */
-  DIR* dirp = opendir(current_dir.c_str()); // convert curent_dir to a char*
+  DIR* dirp = opendir(current_dir.c_str());
   if (!dirp) // In case of failure, we assume that current_dir has no subdirs
     return {};
 
@@ -74,7 +74,7 @@ std::vector<String> DirectoryReader::subdirectories(const String& current_dir)
   {
     String subdir = dp->d_name; // convert dp->d_name to a std::string
     if (subdir[0] != '.' and dp->d_type == DT_DIR) // keep only visible dirs
-      out.push_back(current_dir + "/" + subdir);
+      out.push_back(current_dir + "/" + subdir); // and push them to the stack
   }
   closedir(dirp);
 

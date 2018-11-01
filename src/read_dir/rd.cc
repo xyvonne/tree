@@ -18,7 +18,7 @@ std::string check_args(int argc, char* argv[])
     exit(2);
   }
 
-  return std::string(argv[1]);
+  return argv[1];
 }
 
 /* Read the directory tree, and generate a string from it. */

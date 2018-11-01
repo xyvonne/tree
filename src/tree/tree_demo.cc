@@ -7,9 +7,8 @@
 #include "../../include/tree/tree_error.hh"
 
 /* Type aliases. */
-using String = std::string;
 using Tre = Tree<int>;
-using AST = BinaryTree<String>;
+using AST = BinaryTree<std::string>;
 
 /*
  * Generic tree demo
@@ -20,10 +19,10 @@ void generic_tree_demo()
   std::cout << "\n*** Generic tree demo ***\n\n";
 
   /* TreePrintCompanion setup. */
-  std::function<String(int)> l = [](int x) { return std::to_string(x); };
-  std::function<String(int)> n \
+  std::function<std::string(int)> l = [](int x) { return std::to_string(x); };
+  std::function<std::string(int)> n \
     = [](int x) { return "[" + std::to_string(x) + "]"; };
-  std::function<String(int)> r \
+  std::function<std::string(int)> r \
     = [](int x) { return "[[" + std::to_string(x) + "]]"; };
   TreePrintCompanion<int> pc(r, n, l, 0, 1);
 
@@ -63,18 +62,18 @@ void generic_tree_demo()
   std::cout << "\nTraversals of the original tree:";
 
   std::cout << "\nPre-order search: ";
-  auto vi = tree.pre_order_search();
-  for (auto e : vi)
+  auto v = tree.pre_order_search();
+  for (auto e : v)
     std::cout << e << " ";
 
   std::cout << "\nPost-order search: ";
-  auto wi = tree.post_order_search();
-  for (auto e : wi)
+  auto w = tree.post_order_search();
+  for (auto e : w)
     std::cout << e << " ";
 
   std::cout << "\nBreadth-first search: ";
-  auto xi = tree.breadth_first_search();
-  for (auto e : xi)
+  auto x = tree.breadth_first_search();
+  for (auto e : x)
     std::cout << e << " ";
 }
 
@@ -87,10 +86,11 @@ void binary_tree_demo()
   std::cout << "\n\n*** Binary tree demo ***\n\n";
 
   /* TreePrintCompanion setup. */
-  std::function<String(String)> l = [](String x) { return x; };
-  std::function<String(String)> n = [](String x) { return "[" + x + "]"; };
-  std::function<String(String)> r = [](String x) { return "[" + x + "]"; };
-  TreePrintCompanion<String> pc(r, n, l, 0, 1);
+  std::function<std::string(std::string)> l \
+    = [](std::string x) { return x; };
+  std::function<std::string(std::string)> n \
+    = [](std::string x) { return "[" + x + "]"; };
+  TreePrintCompanion<std::string> pc(n, n, l, 0, 1);
 
   /* Binary tree building (here, an AST). */
   AST ast3("3");
@@ -118,7 +118,8 @@ void binary_tree_demo()
   catch(const EmptyTree& e) { std::cerr << e.what(); }
 
   /* Mapping. */
-  std::function<String(String)> g = [](String x){ return "{" + x + "}"; };
+  std::function<std::string(std::string)> g \
+    = [](std::string x){ return "{" + x + "}"; };
   std::cout << "\n\nApplying x-> \"{\" + x \"}\" to all nodes:\n";
   std::cout << ast.map(g).to_string(pc);
 
@@ -126,76 +127,31 @@ void binary_tree_demo()
   std::cout << "\nTraversals of the original tree:";
 
   std::cout << "\nPre-order search: ";
-  auto vs = ast.pre_order_search();
-  for (auto e : vs)
+  auto v = ast.pre_order_search();
+  for (auto e : v)
     std::cout << e << " ";
 
   std::cout << "\nIn-order search: ";
-  auto ws = ast.in_order_search();
-  for (auto e : ws)
+  auto w = ast.in_order_search();
+  for (auto e : w)
     std::cout << e << " ";
 
   std::cout << "\nPost-order search (RPN): ";
-  auto xs = ast.post_order_search();
-  for (auto e : xs)
+  auto x = ast.post_order_search();
+  for (auto e : x)
     std::cout << e << " ";
 
   std::cout << "\nBreadth-first search: ";
-  auto ys = ast.breadth_first_search();
-  for (auto e : ys)
+  auto y = ast.breadth_first_search();
+  for (auto e : y)
     std::cout << e << " ";
 
   std::cout << "\n";
-}
-
-/*
- * Directory reading demo
- */
-
-void read_dir_demo()
-{
-  std::cout << "Enter path: ";
-  String name;
-  std::getline(std::cin, name);
-  if (name.size() == 0)
-    name += ".";
-
-  /* TreePrintCompanion setup. */
-  std::function<String(String)> l = [](String x) { return x; };
-  std::function<String(String)> n = [](String x) { return x; };
-  std::function<String(String)> r = [](String x) { return x; };
-  TreePrintCompanion<String> pc(r, n, l);
-
-  String s;
-  try
-  {
-    auto table = DirectoryReader(name).table();
-
-    /* Keep only the basename from a directory, e.g. replace a/b/c/d with d */
-    std::function<String(String)> keep_basenames_only \
-      = [](String s){ \
-        size_t idx = s.rfind("/"); \
-          return idx == std::string::npos ? s : s.substr(idx + 1); };
-
-    auto tree = Tree(table).map(keep_basenames_only);
-
-    s = tree.to_string(pc) + "\n";
-    s += std::to_string(tree.size() - 1);
-  }
-
-  catch(const std::error_condition& econd) // Invalid path
-  {
-    s = name +" [error opening dir]\n\n0";
-  }
-
-  s +=" directories\n";
-  std::cout << s;
 }
 
 int main(void)
 {
   generic_tree_demo();
   binary_tree_demo();
-  read_dir_demo();
   return 0;
 }
