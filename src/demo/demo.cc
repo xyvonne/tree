@@ -1,14 +1,15 @@
-#include <functional> // std::function
+#include <functional>
 #include <iostream>
+#include <system_error>
 
-#include "bin_tree.hh"
-#include "error.hh"
+#include "../read_dir/read_dir.hh"
+#include "../tree/bin_tree.hh"
+#include "../tree/error.hh"
 
 /* Type aliases. */
-using I = int;
-using S = std::string;
-using Tre = Tree<I>;
-using AST = BinaryTree<S>;
+using String = std::string;
+using Tre = Tree<int>;
+using AST = BinaryTree<String>;
 
 /*
  * Generic tree demo
@@ -19,10 +20,12 @@ void generic_tree_demo()
   std::cout << "\n*** Generic tree demo ***\n\n";
 
   /* TreePrintCompanion setup. */
-  std::function<S(I)> l = [](I x) { return std::to_string(x); };
-  std::function<S(I)> n = [](I x) { return "[" + std::to_string(x) + "]"; };
-  std::function<S(I)> r = [](I x) { return "[[" + std::to_string(x) + "]]"; };
-  TreePrintCompanion<I> pc(n, l, r, 0, 1);
+  std::function<String(int)> l = [](int x) { return std::to_string(x); };
+  std::function<String(int)> n \
+    = [](int x) { return "[" + std::to_string(x) + "]"; };
+  std::function<String(int)> r \
+    = [](int x) { return "[[" + std::to_string(x) + "]]"; };
+  TreePrintCompanion<int> pc(r, n, l, 0, 1);
 
   /* Tree building. */
   Tre tree2(2);
@@ -84,11 +87,10 @@ void binary_tree_demo()
   std::cout << "\n\n*** Binary tree demo ***\n\n";
 
   /* TreePrintCompanion setup. */
-  std::function<S(S)> l = [](S x) { return x; };
-  std::function<S(S)> n = [](S x) { return "[" + x + "]"; };
-  std::function<S(S)> r = [](S x) { return "[" + x + "]"; };
-  TreePrintCompanion<S> pc(n, l, r, 0, 1);
-
+  std::function<String(String)> l = [](String x) { return x; };
+  std::function<String(String)> n = [](String x) { return "[" + x + "]"; };
+  std::function<String(String)> r = [](String x) { return "[" + x + "]"; };
+  TreePrintCompanion<String> pc(r, n, l, 0, 1);
 
   /* Binary tree building (here, an AST). */
   AST ast3("3");
@@ -116,7 +118,7 @@ void binary_tree_demo()
   catch(const EmptyTree& e) { std::cerr << e.what(); }
 
   /* Mapping. */
-  std::function<S(S)> g = [](S x){ return "{" + x + "}"; };
+  std::function<String(String)> g = [](String x){ return "{" + x + "}"; };
   std::cout << "\n\nApplying x-> \"{\" + x \"}\" to all nodes:\n";
   std::cout << ast.map(g).to_string(pc);
 
@@ -146,9 +148,54 @@ void binary_tree_demo()
   std::cout << "\n";
 }
 
+/*
+ * Directory reading demo
+ */
+
+void read_dir_demo()
+{
+  std::cout << "Enter path: ";
+  String name;
+  std::getline(std::cin, name);
+  if (name.size() == 0)
+    name += ".";
+
+  /* TreePrintCompanion setup. */
+  std::function<String(String)> l = [](String x) { return x; };
+  std::function<String(String)> n = [](String x) { return x; };
+  std::function<String(String)> r = [](String x) { return x; };
+  TreePrintCompanion<String> pc(r, n, l);
+
+  String s;
+  try
+  {
+    auto table = DirectoryReader(name).table();
+
+    /* Keep only the basename from a directory, e.g. replace a/b/c/d with d */
+    std::function<String(String)> keep_basenames_only \
+      = [](String s){ \
+        size_t idx = s.rfind("/"); \
+          return idx == std::string::npos ? s : s.substr(idx + 1); };
+
+    auto tree = Tree(table).map(keep_basenames_only);
+
+    s = tree.to_string(pc) + "\n";
+    s += std::to_string(tree.size() - 1);
+  }
+
+  catch(const std::error_condition& econd) // Invalid path
+  {
+    s = name +" [error opening dir]\n\n0";
+  }
+
+  s +=" directories\n";
+  std::cout << s;
+}
+
 int main(void)
 {
   generic_tree_demo();
   binary_tree_demo();
+  read_dir_demo();
   return 0;
 }
