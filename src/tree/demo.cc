@@ -62,7 +62,7 @@ void demo_core \
   for (const auto& x : tree.pre_order_search())
     std::cout << x << " ";
 
-  std::cout << "\nPost-order search (=RPN for an AST arithmetic evaluator): ";
+  std::cout << "\nPost-order search (=RPN for an arithmetic AST evaluator): ";
   for (const auto& x : tree.post_order_search())
     std::cout << x << " ";
 }
