@@ -9,9 +9,6 @@
 // TODO: documentation
 
 template <typename T>
-class Tree;
-
-template <typename T>
 class BinaryTree : public Tree<T>
 {
   template <typename U>

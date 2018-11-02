@@ -10,22 +10,23 @@
 /**
  * We are working with trees of any size and nodes having any possible arity
  * (=number of children). The leaves are viewed as nodes with arity 0. All
- * nodes (or node values, or labels) must be of the same type.
+ * nodes (more precisely, node values or labels) must be of the same type.
  *
  * The supported (=public) methods include:
  * - the construction from the new root and the children trees, or from a
  *   table giving the children of each node;
- * - access to the size and the depth (=height) of the tree;
- * - information concerning the root: label, arity, and children (as whole
- *   trees);
+ * - general information about the tree: size (=total number of nodes),
+ *   depth (=height), number of leaves, number of inner nodes;
+ * - information about the root: label, arity, and children (as whole trees);
  * - tree mapping;
  * - developer-friendly representation and pretty-printing;
  * - traversals: pre-, post-, and breadth-first searches. We chose to implement
  *   them without using recursion, in order to practice with common STL
  *   structures (vectors, stacks, queues).
  * Methods concerning a specific node other than the root are not part of
- * the interface. In particular, it is not possible to remove a node or a
- * subtree, nor to add a new node anywhere else than on the top of the tree.
+ * the interface. In particular, it is not possible to extract a node (other
+ * than the root) nor a subtree (unless it is attached to the root), nor to
+ * add a node (anywhere else than on the top of the tree).
  *
  *  As a special category of trees, binary trees are implemented through the
  *  derived class BinaryTree<T>. Please refer to "bin_tree.hh" for more
@@ -46,10 +47,10 @@
 
 /**
  * Type aliases.
- * Node<T> represents a node in the tree.
- * Nodes<T> is the vector of the nodes forming the tree.
- * Table<T> is used for constructing a tree from a table: see
- * Tree<T>::Tree(const Table<T>& table) below.
+ * Node<T>: node in the tree.
+ * Nodes<T>: vector of the nodes forming the tree.
+ * Table<T>: table used for tree building:
+ * see Tree<T>::Tree(const Table<T>& table) below.
  */
 template <typename T>
 using Node = std::pair<T, std::vector<size_t>>;
@@ -81,7 +82,7 @@ class Tree
    *
    * [...] TODO: complete the docstring
    *
-   * An empty table can also be used to construct an empty tree.
+   * An empty table (default case) can also be used to construct an empty tree.
    */
   Tree(const Table<T>& table = {});
 
@@ -91,11 +92,17 @@ class Tree
   /// Depth (=height) of the tree. Equals -1 for an empty tree.
   ssize_t depth() const;
 
+  /// Number of leaves.
+  size_t nb_leaves() const;
+
+  /// Number of inner nodes.
+  size_t nb_inner_nodes() const;
+
   /**
-   * Get the label of the root.
+   * Get the value (label) of the root.
    * If the tree is empty, an EmptyTree() exception is thrown.
    */
-  T root() const;
+  T root_value() const;
 
   /**
    * Get the arity (i.e., the number of children) of the root.
@@ -161,7 +168,7 @@ class Tree
   bool is_leaf(size_t id) const;
 
   /**
-   * Perform the post-order search and breath-first search on the tree,
+   * Perform a post-order / breath-first search on the tree,
    * but return the node ids instead of the node values.
    */
   std::vector<size_t> post_order_search_ids() const;
@@ -169,7 +176,7 @@ class Tree
 
   /**
    * Return a vector telling whether each node (given by its id) is its
-   * parent's last tree child, or not.
+   * parent's last child, or not.
    * By convention, the root is its parent's last child.
    * There are as many last children as there are inner nodes.
    */

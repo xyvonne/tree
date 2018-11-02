@@ -1,23 +1,23 @@
 CXX = g++
-CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++17
+CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++14
 
-VPATH = src/read_dir/ src/tree/ #src/eval_expr
+VPATH = src/rd/ src/tree/ #src/eval
 
-#EVAL_OBJS = eval.o eval_error.o eval_tree.o lexer.o operator.o
-#EVAL_OBJS += parser.o preprocessor.o
-RD_OBJS = read_dir.o rd.o
+#EVAL_OBJS = eval.o eval_ast.o eval_error.o
+#EVAL_OBJS += lexer.o operator.o parser.o preprocessor.o
+DEMO_OBJS = $(TREE_OBJS) demo.o
+RD_OBJS = rd.o reader.o
 TREE_OBJS = tree_error.o
-TREE_DEMO_OBJS = $(TREE_OBJS) tree_demo.o
-OBJS = $(RD_OBJS) $(TREE_DEMO_OBJS) #(EVAL_OBJS)
+OBJS = $(DEMO_OBJS) $(RD_OBJS) #(EVAL_OBJS)
 
-EXEC = rd tree_demo #eval
+EXEC = demo rd #eval
 
 all: $(EXEC)
 
 rd: $(RD_OBJS) $(TREE_OBJS)
 	$(CXX) $^ -o $@
 
-tree_demo: $(TREE_DEMO_OBJS)
+demo: $(DEMO_OBJS)
 	$(CXX) $^ -o $@
 
 #eval: $(EVAL_OBJS) $(TREE_OBJS)

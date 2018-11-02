@@ -2,6 +2,7 @@
 
 #include "tree.hh" // template class interface
 
+#include <algorithm> // std::reverse
 #include <queue>
 #include <stack>
 #include <string>
@@ -12,9 +13,9 @@
 
 template <typename T>
 Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
-  : nodes_{{root, {0, 0}}} // parent's root is itself and has id = 0
+  : nodes_{{root, {0, 0}}} // parent's root is itself and has id == 0
 {
-  size_t offset = 1; // node reindexing counter
+  size_t offset = 1; // counter used for updating all node ids
   for (auto child : children)
   {
     nodes_[0].second.push_back(offset); // child is a new root's child
@@ -29,7 +30,7 @@ Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
     /* Add the whole child tree structure to root. */
     nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
 
-    offset += child.size(); // update node reindexing counter
+    offset += child.size(); // update offset for the next child
   }
 }
 
@@ -39,7 +40,7 @@ Tree<T>::Tree(const Table<T>& table)
   size_t n = table.size();
   if (n > 0)
   {
-    /* Store all different values in an array, for lookup purpses. */
+    /* Store all different values in an array, for lookup purposes. */
     std::vector<T> symbols;
     for (size_t i = 0; i < n; i++)
       symbols.push_back(table[i].first);
@@ -61,8 +62,8 @@ Tree<T>::Tree(const Table<T>& table)
         {
           nodes_.clear(); // Leave an empty tree as a zombie
           throw InvalidTable(
-                "[ERROR] Calling Tree<T>::Tree(const Table<T>&) failed: "
-                "Invalid table.\nConstructing an empty tree instead.");
+              "[ERROR] Calling Tree<T>::Tree(const Table<T>&) failed: "
+              "Invalid table.\nConstructing an empty tree instead.");
         }
 
         /* Add the child id to the node data. */
@@ -83,10 +84,11 @@ Tree<T>::Tree(const Table<T>& table)
 }
 
 template <typename T>
-T Tree<T>::root() const
+T Tree<T>::root_value() const
 {
   if (size() == 0)
-    throw EmptyTree("[ERROR] Calling Tree<T>::root() failed: Empty tree\n");
+    throw EmptyTree("[ERROR]" \
+        " Calling Tree<T>::root_value() failed: Empty tree\n");
   return nodes_[0].first;
 }
 
@@ -100,12 +102,54 @@ size_t Tree<T>::root_arity() const
 }
 
 template <typename T>
-std::vector<Tree<T>> Tree<T>::root_children() const // TODO
+std::vector<Tree<T>> Tree<T>::root_children() const
 {
   if (size() == 0)
     throw EmptyTree("[ERROR]" \
         " Calling Tree<T>::root_children() failed: Empty tree\n");
-  return {};
+
+  if (root_arity() == 0)
+    return {};
+
+  /* Get root's children ids, and add size() at the end for convenience. */
+  std::vector<size_t> children_ids;
+  for (size_t i = 2; i < nodes_[0].second.size(); i++)
+    children_ids.push_back(nodes_[0].second[i]);
+  children_ids.push_back(size());
+
+  /* Initialize the output vector. */
+  std::vector<Tree<T>> out((children_ids.size() - 1), Tree<T>{});
+
+  /*
+   * Update all ids in children trees.
+   * Recall that all nodes in the given tree are stored w.r.t. pre-order
+   * search; in other words, their indexes for a same given child tree form a
+   * sequence of consecutive integers; index 0 corresponds to the current root
+   * and has to be dropped, then child #0's sequence comes first, then
+   * child #1's, and so on. So, thanks to children_ids constructed above, the
+   * nodes for every child are retrieved easily, whence the double loop
+   * below.
+   * Actually, the tedious part of the job consists in updating correctly
+   * all node ids (references) inside all children trees. If 'offset' is the
+   * integer in the given tree indexing a new root, then we have to substract
+   * this offset to all the ids inside the corresponding child tree,
+   * but this new root must have its vector ids starting with 0,0, because
+   * it does become a new root and thus its own parent.
+   */
+  for (size_t j = 0; j < out.size(); j++)
+    // By construction, children_ids[j + 1] == size() if j == out.size() -1
+    for (size_t i = children_ids[j]; i < children_ids[j + 1]; i++)
+    {
+      Node<T> child_node = nodes_[i];
+      size_t offset = children_ids[j];
+      for (auto& child_id : child_node.second)
+        child_id -= offset; // substract offset to all ids in the child
+      if (i == children_ids[j])
+        child_node.second[0] = 0; // let the child root ids start with 0,0
+      out[j].nodes_.push_back(child_node); // commit the updates in the result
+    }
+
+  return out;
 }
 
 template <typename T>
@@ -371,6 +415,22 @@ template <typename T>
 bool Tree<T>::is_leaf(size_t id) const
 {
   return id < size() and nodes_[id].second.size() <= 2;
+}
+
+template <typename T>
+size_t Tree<T>::nb_leaves() const
+{
+  size_t count = 0;
+  for (size_t i = 0; i < size(); i++)
+    if (is_leaf(i))
+      count++;
+  return count;
+}
+
+template <typename T>
+size_t Tree<T>::nb_inner_nodes() const
+{
+  return size() - nb_leaves();
 }
 
   template <typename T>
