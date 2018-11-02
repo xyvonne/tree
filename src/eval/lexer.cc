@@ -9,7 +9,7 @@ Lexer::Lexer(std::string expression)
   : expression_(expression), pos_(0)
 {
   if (!is_valid())
-    throw LexerError();
+    throw EvalException::LexerError();
 }
 
 std::string Lexer::consume_number()
@@ -42,7 +42,7 @@ Operator::Type Lexer::consume_operator()
 
   /* What if the operator type was not found? This should never happen!!! */
   if (type == Operator::NUMBER)
-    throw UnknownToken();
+    throw EvalException::UnknownToken();
 
   /* Distinguish between unary and binary plus. */
   if (type == Operator::BINARY_PLUS and !is_binary())

@@ -35,7 +35,7 @@ long Operator::eval() const
   if (type() == NUMBER)
       return std::stol(value());
   else // invalid operator
-      throw ""; //FIXME
+      throw EvalException::BadOperatorArguments();
 }
 
 long Operator::eval(long first) const
@@ -47,7 +47,7 @@ long Operator::eval(long first) const
     case (UNARY_MINUS):
       return -first;
     default: // invalid operator
-      throw ""; //FIXME
+      throw EvalException::BadOperatorArguments();
   }
 }
 
@@ -64,21 +64,21 @@ long Operator::eval(long first, long second) const
     case (DIVIDE):
       {
         if (second == 0)
-          throw DivisionByZero();
+          throw EvalException::DivisionByZero();
         else
           return first / second;
       }
     case (REMAINDER):
       {
         if (second == 0)
-          throw DivisionByZero();
+          throw EvalException::DivisionByZero();
         else
           return first % second;
       }
     case (POWER):
       return static_cast<long>(pow(first, second));
     default: // invalid operator
-      throw ""; //FIXME
+      throw EvalException::BadOperatorArguments();
   }
 }
 

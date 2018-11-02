@@ -12,7 +12,7 @@ using Tre = Tree<int>;
  */
 template <typename T>
 void demo_core \
-        (const std::string& header,
+       (const std::string& header,
         const Tree<T>& tree,
         const TreePrintCompanion<T>& pc,
         const std::function<T(T)>& mapped_function,
@@ -32,9 +32,11 @@ void demo_core \
   std::cout << "\nNumber of leaves: " << tree.nb_leaves();
   std::cout << "\nNumber of inner nodes: " << tree.nb_inner_nodes();
   try{ std::cout << "\nRoot value: " << tree.root_value(); }
-  catch(const EmptyTree& e) { std::cerr << e.what(); }
+  catch(const TreeException::EmptyTree& e) { std::cerr << e.what(); }
   try{ std::cout << "\nRoot arity: " << tree.root_arity(); }
-  catch(const EmptyTree& e) { std::cerr << e.what(); }
+  catch(const TreeException::EmptyTree& e) { std::cerr << e.what(); }
+  try{ tree.root_children(); }
+  catch(const TreeException::EmptyTree& e) { std::cerr << e.what(); }
 
   /* Root children. */
   std::cout << "\nChild #0 of the original tree:\n";

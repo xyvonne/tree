@@ -56,10 +56,13 @@ class Operator
     inline std::string name() const { return names[(size_t) type_]; }
 
     /*
-     * Evaluation. Numbers are evaluated trivially as operators with arity 0.
-     * An exception //FIXME: which one?
-     * is thrown if the number of given arguments is different from
-     * the operator arity.
+     * Evaluation.
+     * Numbers are evaluated trivially as operators with arity 0.
+     * Throw an EvalException::BadOperatorArguments exception if the number
+     * of given arguments is different from the operator arity.
+     * Throw an EvalException::DivisionByZero exception if one attempts
+     * to divide by 0 (i.e., to pass in "0" as second argument during a
+     * DIVIDE or REMAINDER operation).
      */
     long eval() const; // operators with arity 0
     long eval(long first) const; // unary operators

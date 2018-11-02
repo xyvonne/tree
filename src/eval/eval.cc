@@ -9,7 +9,8 @@
 
 //TODO
 #if 0
-* Tester l evaluation des operateurs.
+* Tester l evaluation des operateurs, EvalException::BadOperatorArguments
+* compris.
 * Surcharger dans Operator l operateur >, en disant que o1 > o2 si :
   1) o2 est un vrai operateur (pas un nombre, ni (), ni STOP),
 & 2) - ou bien priorite(o1) > priorite(o2),
@@ -20,12 +21,12 @@ int main(int argc, char** argv)
 {
   try
   {
-	  std::string default_expression = "123 \t  +  2 \n\r\t - 42";
+	  std::string default_expression = ""; // "123 \t  +  2 \n\r\t - 42";
     Preprocessor preprocessor(argc, argv, default_expression);
     std::string expression = preprocessor.expression();
     Parser parser(expression);
   }
-  catch(const EvalException& e)
+  catch(const EvalException::BaseException& e)
   {
     std::cerr << e.what() << std::endl;
     return e.code(); // quit the program with appropriate exit code

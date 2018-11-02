@@ -7,7 +7,14 @@
 class Lexer
 {
   public:
-    /// Constructor.
+    /**
+     * Constructor.
+     * Store the expression to be read, and set the position (=index in this
+     * string) of the character being read to 0.
+     * Call is_valid() (see below) to check the lexical validity of the given
+     * expression. If this fails, throw an EvalException::LexerError
+     * exception.
+     */
     Lexer(std::string expression);
 
     /// Read (consume) the next token, and return it as an operator.
@@ -23,7 +30,12 @@ class Lexer
     /// If a number is currently read, consume it and return it as a number.
     std::string consume_number();
 
-    /// If an true operator is currenty read, consume it and return its type.
+    /**
+     * If an arithmetic operator or a parenthesis is currently being read,
+     * consume it and return its operator type.
+     * Throw an EvalException::UnknownToken exception if this type could not
+     * be determined.
+     */
     Operator::Type consume_operator();
 
     /// Tell if the '+/-' currently read is binary (true) or unary (false).

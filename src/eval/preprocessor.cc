@@ -23,7 +23,7 @@ void Preprocessor::check_implementation() const
       or Operator::names.size() != Operator::symbols.size() \
       or Operator::names.size() != Operator::precedences.size() \
       or Operator::names.size() != Operator::bindings.size())
-    throw BadOperatorImplementation();
+    throw EvalException::BadOperatorImplementation();
 }
 
 std::string Preprocessor::parse_command_line() const
@@ -31,7 +31,7 @@ std::string Preprocessor::parse_command_line() const
   if (argc_ == 1)
   {
     if (default_expression_ == "")
-      throw EmptyExpression();
+      throw EvalException::EmptyExpression();
     else
     {
       std::cerr << "[WARNING] No expression provided: evaluating ";
@@ -41,7 +41,7 @@ std::string Preprocessor::parse_command_line() const
   }
 
   if (argc_ > 2)
-    throw TooManyArguments();
+    throw EvalException::TooManyArguments();
 
   return argv_[1];
 }

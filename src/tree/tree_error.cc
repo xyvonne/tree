@@ -1,15 +1,16 @@
 #include "../../include/tree/tree_error.hh"
 
-EmptyTree::EmptyTree(const std::string& message)
-  : TreeException(message)
-{}
+namespace TreeException
+{
+  BaseException::BaseException(const std::string& message)
+    : std::logic_error(message)
+  {}
 
-InvalidTable::InvalidTable(const std::string& message)
-  : TreeException(message)
-{}
+  EmptyTree::EmptyTree(const std::string& message)
+    : BaseException(message)
+  {}
 
-TreeException::TreeException(const std::string& message)
-  : std::logic_error(message)
-{}
-
-
+  InvalidTable::InvalidTable(const std::string& message)
+    : BaseException(message)
+  {}
+}

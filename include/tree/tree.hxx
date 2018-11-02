@@ -61,7 +61,7 @@ Tree<T>::Tree(const Table<T>& table)
         if (j == n) // Symbol not found
         {
           nodes_.clear(); // Leave an empty tree as a zombie
-          throw InvalidTable(
+          throw TreeException::InvalidTable(
               "[ERROR] Calling Tree<T>::Tree(const Table<T>&) failed: "
               "Invalid table.\nConstructing an empty tree instead.");
         }
@@ -87,7 +87,7 @@ template <typename T>
 T Tree<T>::root_value() const
 {
   if (size() == 0)
-    throw EmptyTree("[ERROR]" \
+    throw TreeException::EmptyTree("[ERROR]" \
         " Calling Tree<T>::root_value() failed: Empty tree\n");
   return nodes_[0].first;
 }
@@ -96,7 +96,7 @@ template <typename T>
 size_t Tree<T>::root_arity() const
 {
   if (size() == 0)
-    throw EmptyTree("[ERROR]" \
+    throw TreeException::EmptyTree("[ERROR]" \
         " Calling Tree<T>::root_arity() failed: Empty tree\n");
   return nodes_[0].second.size() - 2;
 }
@@ -105,7 +105,7 @@ template <typename T>
 std::vector<Tree<T>> Tree<T>::root_children() const
 {
   if (size() == 0)
-    throw EmptyTree("[ERROR]" \
+    throw TreeException::EmptyTree("[ERROR]" \
         " Calling Tree<T>::root_children() failed: Empty tree\n");
 
   if (root_arity() == 0)

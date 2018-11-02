@@ -8,7 +8,7 @@ class Preprocessor
   public:
     /**
      * Class constructor.
-     * Do some little preprocessing, i.e. calls in order
+     * Do some little preprocessing, i.e. call in order
      * check_implementation(), parse_command_line() and remove_whitespaces()
      * (see below).
      */
@@ -30,7 +30,7 @@ class Preprocessor
 
     /**
      * Check that the operator implementation is correct.
-     * Throw a BadOperatorImplementation() exception if not.
+     * Throw an EvalException::BadOperatorImplementation exception if not.
      */
     void check_implementation() const;
 
@@ -38,8 +38,8 @@ class Preprocessor
      * Check that exactly 1 argument is passed in to the program;
      * if no argument is passed to the program but a default_expression
      * is passed in to the constructor, use this expression instead;
-     * otherwise, throw an EmptyExpression() or a TooManyArguments()
-     * exception.
+     * otherwise, throw an EvalException::EmptyExpression or an
+     * EvalException:TooManyArguments exception.
      */
     std::string parse_command_line() const;
 

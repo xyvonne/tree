@@ -82,6 +82,8 @@ class Tree
    *
    * [...] TODO: complete the docstring
    *
+   * If the table in invalid, throw a TreeException::InvalidTable exception.
+   *
    * An empty table (default case) can also be used to construct an empty tree.
    */
   Tree(const Table<T>& table = {});
@@ -100,19 +102,19 @@ class Tree
 
   /**
    * Get the value (label) of the root.
-   * If the tree is empty, an EmptyTree() exception is thrown.
+   * If the tree is empty, throw a TreeException::EmptyTree exception.
    */
   T root_value() const;
 
   /**
    * Get the arity (i.e., the number of children) of the root.
-   * If the tree is empty, an EmptyTree() exception is thrown.
+   * If the tree is empty, throw a TreeException::EmptyTree exception.
    */
   size_t root_arity() const;
 
   /**
    * Get the children of the root, as a vector of new trees.
-   * If the tree is empty, an EmptyTree() exception is thrown.
+   * If the tree is empty, throw a TreeException::EmptyTree exception.
    */
   std::vector<Tree<T>> root_children() const;
 
