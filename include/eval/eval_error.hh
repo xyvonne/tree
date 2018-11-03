@@ -14,7 +14,7 @@ namespace EvalException
    */
   enum Code
   {
-    EMPTY_EXPRESSION = 0,
+    SUCCESS = 0,
     LEXER_ERROR = 1,
     PARSER_ERROR = 2,
     ARITHMETIC_ERROR = 3,
@@ -49,10 +49,11 @@ namespace EvalException
   /**
    * BaseException/BadArgument
    * Thrown if the user does not provide exactly 1 expression.
-   * Not to be instantiated.
    */
   struct BadArgument : public BaseException
-  {};
+  {
+    virtual Code code() const override;
+  };
 
   /**
    * BaseException/BadImplementation
@@ -76,7 +77,8 @@ namespace EvalException
 
   /**
    * BaseException/ArithmeticError/DivisionbyZero
-   * Thrown if the second operand of '/' (division) or '%' (remainder) is 0.
+   * Thrown if evaluation leads to a division by 0.
+   * Some examples: 1/0, 0/0, 1%0, or 0^(-2).
    */
   struct DivisionByZero : public ArithmeticError
   {
@@ -89,7 +91,6 @@ namespace EvalException
    */
   struct EmptyExpression : public BadArgument
   {
-    virtual Code code() const override;
     virtual const char* what() const throw() override;
   };
 
@@ -99,7 +100,6 @@ namespace EvalException
    */
   struct TooManyArguments : public BadArgument
   {
-    virtual Code code() const override;
     virtual const char* what() const throw() override;
   };
 

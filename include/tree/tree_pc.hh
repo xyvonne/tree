@@ -7,7 +7,7 @@
 
 // TODO: documentation
 
-/// PrintFunction<T>: alias type for functions mapping T to std::string
+/// PrintFunction<T>: type alias for functions mapping T to std::string
 template <typename T>
 using PrintFunction = std::function<std::string(T)>;
 

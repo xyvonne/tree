@@ -12,7 +12,7 @@ Lexer::Lexer(std::string expression)
     throw EvalException::LexerError();
 }
 
-std::string Lexer::consume_number()
+std::string Lexer::consume_number() const
 {
   /* end: first index such that expression_[end] is no longer a digit. */
   size_t end = pos_;
@@ -24,11 +24,12 @@ std::string Lexer::consume_number()
   }
 
   /* Consume all digits read, and return the number read as a sring. */
+  const auto out = expression_.substr(pos_, end - pos_);
   pos_ = end;
-  return expression_.substr(pos_, end - pos_);
+  return out;
 }
 
-Operator::Type Lexer::consume_operator()
+Operator::Type Lexer::consume_operator() const
 {
   Operator::Type type = Operator::NUMBER;
   char c = expression_[pos_];
@@ -67,7 +68,7 @@ bool Lexer::is_binary() const
 
 bool Lexer::is_valid() const
 {
-  for (char c : expression_)
+  for (const auto& c : expression_)
   {
     if (c == 'm' or c == 'p' or c == '$') // these are token symbols ...
       return false; // ... but not usual arithmetic operator symbols
@@ -75,7 +76,7 @@ bool Lexer::is_valid() const
       continue;
 
     bool is_operator = false; // test if c is an operator symbol
-    for (char s : Operator::symbols)
+    for (const auto& s : Operator::symbols)
       if (c == s)
       {
         is_operator = true;
@@ -87,7 +88,7 @@ bool Lexer::is_valid() const
   return true;
 }
 
-Operator Lexer::next_token()
+Operator Lexer::next_token() const
 {
   /* Case when there's nothing left to read. */
   if (pos_ >= expression_.size())

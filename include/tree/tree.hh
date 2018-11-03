@@ -11,6 +11,8 @@
  * We are working with trees of any size and nodes having any possible arity
  * (=number of children). The leaves are viewed as nodes with arity 0. All
  * nodes (more precisely, node values or labels) must be of the same type.
+ * For technical reasons, this type must be endowed with an overloaded ==
+ * operator.
  *
  * The supported (=public) methods include:
  * - the construction from the new root and the children trees, or from a

@@ -4,49 +4,51 @@
 
 namespace EvalException
 {
-  //ArithmeticError
+  /* ArithmeticError */
   Code ArithmeticError::code() const
   {
     return ARITHMETIC_ERROR;
   }
 
-  //BadImplementation
+  /* BadArgument */
+  Code BadArgument::code() const
+  {
+    return BAD_ARGUMENT;
+  }
+
+  /* BadImplementation */
   Code BadImplementation::code() const
   {
     return BAD_IMPLEMENTATION;
   }
 
-  // BadOperatorArguments
+  /* BadOperatorArguments */
   const char* BadOperatorArguments::what() const throw()
   {
     return ("[ERROR 5] Bad operator arguments.\n" \
         "Please read the \"eval_error.hh\" documentation for more details.");
   }
 
-  // BadOperatorImplementation
+  /* BadOperatorImplementation */
   const char* BadOperatorImplementation::what() const throw()
   {
     return ("[ERROR 5] Bad operator implementation.\n" \
         "Please read the \"eval_error.hh\" documentation for more details.");
   }
 
-  // DivisionByZero
+  /* DivisionByZero */
   const char* DivisionByZero::what() const throw()
   {
     return "[ERROR 3] Division by zero";
   }
 
-  // EmptyExpression
-  Code EmptyExpression::code() const
-  {
-    return EMPTY_EXPRESSION;
-  }
+  /* EmptyExpression */
   const char* EmptyExpression::what() const throw()
   {
-    return "[ERROR 0] Empty expression. Usage: ./eval <expression to evaluate>";
+    return "[ERROR 4] Empty expression. Usage: ./eval <expression>";
   }
 
-  // LexerError
+  /* LexerError */
   Code LexerError::code() const
   {
     return LEXER_ERROR;
@@ -56,7 +58,7 @@ namespace EvalException
     return "[ERROR 1] Syntax error: lexer error";
   }
 
-  // ParserError
+  /* ParserError */
   Code ParserError::code() const
   {
     return PARSER_ERROR;
@@ -66,17 +68,13 @@ namespace EvalException
     return "[ERROR 2] Syntax error: parser error";
   }
 
-  // TooManyArguments
-  Code TooManyArguments::code() const
-  {
-    return BAD_ARGUMENT;
-  }
+  /* TooManyArguments */
   const char* TooManyArguments::what() const throw()
   {
-    return "[ERROR 4] Too many arguments. Usage: ./eval <expression to evaluate>";
+    return "[ERROR 4] Too many arguments. Usage: ./eval <expression>";
   }
 
-  // UnknownToken
+  /* UnknownToken */
   const char* UnknownToken::what() const throw()
   {
     return ("[ERROR 5] Unknown token.\n" \

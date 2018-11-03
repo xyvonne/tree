@@ -100,7 +100,7 @@ void binary_tree_demo()
   AST ast48("*", ast6, astp8);
   AST ast("+", ast1, ast48);
 
-  /* Launch the demo. */
+  /* Run the demo. */
   demo_core<std::string>(header, ast, pc, mapped_function, mapping_msg);
 
   /* Specific part for binary trees: in-order search. */
@@ -143,7 +143,7 @@ void generic_tree_demo()
   Tre tree0(0, {tree1, tree5, tree8, tree1, tree9});
   Tre tree(3, {tree0, tree3});
 
-  /* Launch the demo. */
+  /* Run the demo. */
   demo_core<int>(header, tree, pc, mapped_function, mapping_msg);
 }
 

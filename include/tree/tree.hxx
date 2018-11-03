@@ -22,13 +22,24 @@ Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
 
     for (auto& node : child.nodes_)
     {
+
       for (auto& id : node.second)
         id += offset; // update id's grandchildren for all child's nodes
     }
+
     child.nodes_[0].second[0] = 0; // root is child's parent
 
     /* Add the whole child tree structure to root. */
-    nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
+    std::copy (child.nodes_.begin(), child.nodes_.end(), \
+        std::back_inserter(nodes_));
+    /*
+     * CAUTION: the more common following implemenation produces a TERRIBLE
+     * ERROR LOG from the compiler when applied which T = Operator, a custom
+     * class.
+     * The former implementation works. Do not ask me why!!!
+     *
+     * nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
+     */
 
     offset += child.size(); // update offset for the next child
   }
@@ -433,7 +444,7 @@ size_t Tree<T>::nb_inner_nodes() const
   return size() - nb_leaves();
 }
 
-  template <typename T>
+template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tree<T>& tree)
 {
   return os << tree.to_string();

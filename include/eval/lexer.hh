@@ -17,26 +17,41 @@ class Lexer
      */
     Lexer(std::string expression);
 
-    /// Read (consume) the next token, and return it as an operator.
-    Operator next_token();
+    /**
+     * Read (consume) the next token, and return it as an operator.
+     * This method can be made const because the only member attribute it
+     * modifies, namely pos_, is mutable.
+     */
+    Operator next_token() const;
 
   private:
     /// Expression to be split into tokens.
     const std::string expression_;
 
-    /// Position (index) of the character currently read in the expression.
-    size_t pos_;
+    /*
+     * Position (index) of the character currently read in the expression.
+     * Mutability is required here to make several methods of this class
+     * const, and hence allow definitions like "auto o1 = lexer._next_token()"
+     * in the parser.
+     */
+    mutable size_t pos_;
 
-    /// If a number is currently read, consume it and return it as a number.
-    std::string consume_number();
+    /**
+     * If a number is currently read, consume it and return it as a number.
+     * This method can be made const because the only member attribute it
+     * modifies, namely pos_, is mutable.
+     */
+   std::string consume_number() const;
 
     /**
      * If an arithmetic operator or a parenthesis is currently being read,
      * consume it and return its operator type.
      * Throw an EvalException::UnknownToken exception if this type could not
      * be determined.
+     * This method can be made const because the only member attribute it
+     * modifies, namely pos_, is mutable.
      */
-    Operator::Type consume_operator();
+    Operator::Type consume_operator() const;
 
     /// Tell if the '+/-' currently read is binary (true) or unary (false).
     bool is_binary() const;

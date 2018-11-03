@@ -7,12 +7,12 @@ class Preprocessor
 {
   public:
     /**
-     * Class constructor.
+     * Constructor.
      * Do some little preprocessing, i.e. call in order
      * check_implementation(), parse_command_line() and remove_whitespaces()
      * (see below).
      */
-    Preprocessor(int argc, char** argv, std::string default_expression = "");
+    Preprocessor(int argc, char** argv);
 
     /// Return the preprocessed expression.
     inline std::string expression() const { return expression_; }
@@ -22,10 +22,7 @@ class Preprocessor
     const int argc_;
     char** argv_;
 
-    /// Expression to be processed if the user did not provide one.
-    std::string default_expression_;
-
-    /// Actual expression to be preprocessed.
+    /// Expression to be preprocessed.
     std::string expression_;
 
     /**
@@ -35,14 +32,12 @@ class Preprocessor
     void check_implementation() const;
 
     /**
-     * Check that exactly 1 argument is passed in to the program;
-     * if no argument is passed to the program but a default_expression
-     * is passed in to the constructor, use this expression instead;
-     * otherwise, throw an EvalException::EmptyExpression or an
+     * Check that exactly 1 argument is passed in to the program; if not,
+     * throw an EvalException::EmptyExpression or an
      * EvalException:TooManyArguments exception.
      */
     std::string parse_command_line() const;
 
-    /// Remove all whitespaces (e.g. ' ', '\n', '\r', '\t') from expression.
+    /// Remove all whitespaces (e.g. ' ', '\n', '\r', '\t') from expression_.
     void remove_whitespaces();
 };

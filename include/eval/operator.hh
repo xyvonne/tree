@@ -53,8 +53,6 @@ class Operator
     inline Type type() const { return type_; }
     inline std::string value() const { return value_; }
 
-    inline std::string name() const { return names[(size_t) type_]; }
-
     /*
      * Evaluation.
      * Numbers are evaluated trivially as operators with arity 0.
@@ -62,21 +60,33 @@ class Operator
      * of given arguments is different from the operator arity.
      * Throw an EvalException::DivisionByZero exception if one attempts
      * to divide by 0 (i.e., to pass in "0" as second argument during a
-     * DIVIDE or REMAINDER operation).
+     * DIVIDE or REMAINDER operation, or to raise 0 to a negative power).
      */
     long eval() const; // operators with arity 0
     long eval(long first) const; // unary operators
     long eval(long first, long second) const; // binary operators
 
     /// Represent the operator as a string.
-    std::string to_string(bool verbose = false) const;
+    std::string to_string() const;
 
     /// Operator traits (note that they are class attributes).
     static const std::vector<unsigned> arities;
     static const std::vector<bool> bindings;
-    static const std::vector<std::string> names;
     static const std::vector<unsigned> precedences;
     static const std::vector<char> symbols;
+
+    /**
+     * Operator equality. We need this operator to construct Tree<Operator>
+     * objects (a.k.a ASTs).
+     */
+    bool operator==(const Operator& other) const;
+
+    /**
+     * Operator precedence in the sense of Shunting-yard Algorithm:
+     * o1 > o2 if o1 has higher precedence (in the usual sense) than o2,
+     * or if o1 and o2 have the same precedence and o1 is right associative.
+     */
+    bool operator>(const Operator& other) const;
 
   private:
     /// Operator type.
