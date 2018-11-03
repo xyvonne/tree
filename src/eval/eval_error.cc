@@ -15,6 +15,10 @@ namespace EvalException
   {
     return BAD_ARGUMENT;
   }
+  const char* BadArgument::what() const throw()
+  {
+    return "[ERROR 4] Wrong number of arguments. Usage: ./eval <expression>";
+  }
 
   /* BadImplementation */
   Code BadImplementation::code() const
@@ -42,12 +46,6 @@ namespace EvalException
     return "[ERROR 3] Division by zero";
   }
 
-  /* EmptyExpression */
-  const char* EmptyExpression::what() const throw()
-  {
-    return "[ERROR 4] Empty expression. Usage: ./eval <expression>";
-  }
-
   /* LexerError */
   Code LexerError::code() const
   {
@@ -66,12 +64,6 @@ namespace EvalException
   const char* ParserError::what() const throw()
   {
     return "[ERROR 2] Syntax error: parser error";
-  }
-
-  /* TooManyArguments */
-  const char* TooManyArguments::what() const throw()
-  {
-    return "[ERROR 4] Too many arguments. Usage: ./eval <expression>";
   }
 
   /* UnknownToken */

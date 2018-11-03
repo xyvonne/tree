@@ -8,7 +8,12 @@
 Lexer::Lexer(std::string expression)
   : expression_(expression), pos_(0)
 {
-  if (!is_valid())
+  if (!is_valid_operator_implementation())
+    throw EvalException::BadOperatorImplementation();
+
+  remove_whitespaces();
+
+  if (!is_valid_expression())
     throw EvalException::LexerError();
 }
 
@@ -66,7 +71,7 @@ bool Lexer::is_binary() const
   return ('0' <= c and c <= '9') or c == ')';
 }
 
-bool Lexer::is_valid() const
+bool Lexer::is_valid_expression() const
 {
   for (const auto& c : expression_)
   {
@@ -88,6 +93,14 @@ bool Lexer::is_valid() const
   return true;
 }
 
+bool Lexer::is_valid_operator_implementation()
+{
+  return \
+    Operator::arities.size() == Operator::bindings.size()
+    and Operator::arities.size() == Operator::precedences.size()
+    and Operator::arities.size() == Operator::symbols.size();
+}
+
 Operator Lexer::next_token() const
 {
   /* Case when there's nothing left to read. */
@@ -100,4 +113,24 @@ Operator Lexer::next_token() const
     return Operator(Operator::NUMBER, consume_number());
   else
     return Operator(consume_operator());
+}
+
+void Lexer::remove_whitespaces()
+{
+  /* Naive implementation. */
+  std::string old = expression_;
+  expression_ .clear();
+  for (const auto& c : old)
+   if (c != ' ' and c != '\n' and c != '\r' and c != '\t')
+     expression_ += c;
+
+#if 0
+  /* Less naive implementation:
+   * https://www.gamedev.net/forums/topic/359650-remove-whitespace-from-string/
+   */
+#include<algorithm>
+  expression_.erase(\
+      remove_if(expression_.begin(), expression_.end(), ::isspace), \
+      expression_.end());
+#endif
 }

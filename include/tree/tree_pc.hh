@@ -5,8 +5,6 @@
 
 /* TreePrintCompanion interface */
 
-// TODO: documentation
-
 /// PrintFunction<T>: type alias for functions mapping T to std::string
 template <typename T>
 using PrintFunction = std::function<std::string(T)>;

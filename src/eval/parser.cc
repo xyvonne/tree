@@ -28,18 +28,18 @@ AST Parser::ast() const
      * modified either. And so, I could see no other way to write this loop.
      */
     const auto o1 = lexer_.next_token();
-    if (o1.type() == Operator::STOP)
+    if (o1.is_stop())
       break;
 
     /* Two easy cases. */
-    if (o1.type() == Operator::NUMBER)
+    if (o1.is_number())
     {
-      A.push({o1}); // Numbers are pushed onto the AST stack.
+      A.push({o1}); // {o1}: construct an AST with a single node o1
       continue;
     }
-    if (o1.type() == Operator::LEFT_PARENTHESIS)
+    if (o1.is_left_parenthesis())
     {
-      O.push(o1); // '(' are pushed onto the operator stack.
+      O.push(o1);
       continue;
     }
 
@@ -54,26 +54,26 @@ AST Parser::ast() const
      * update the AST stack accordingly, and repeat this until the former
      * condition is false.
      */
-    bool missing_left_parenthesis = (o1.type() == Operator::RIGHT_PARENTHESIS);
+    bool missing_left_parenthesis = o1.is_right_parenthesis();
 
     while (!O.empty())
     {
       Operator o2 = O.top();
-      if (o2.type() == Operator::LEFT_PARENTHESIS)
+      if (o2.is_left_parenthesis())
       {
         missing_left_parenthesis = false;
-        if (o1.type() == Operator::RIGHT_PARENTHESIS)
+        if (o1.is_right_parenthesis())
           O.pop();
         break;
       }
-      if (o1.type() != Operator::RIGHT_PARENTHESIS and o1 > o2)
+      if (o1 > o2)
         break;
       pop_operator_and_add_node(O, A);
     }
 
     if (missing_left_parenthesis)
       throw EvalException::ParserError();
-    if (o1.type() != Operator::RIGHT_PARENTHESIS)
+    if (!o1.is_right_parenthesis())
       O.push(o1);
   }
 
@@ -87,36 +87,6 @@ AST Parser::ast() const
   if (A.size() != 1)
     throw EvalException::ParserError();
   return A.top();
-}
-
-void Parser::pop_operator_and_add_node(\
-    std::stack<Operator>& O, std::stack<AST>& A) const
-{
-  /* Pop an operator from the operator stack. */
-  if (O.empty())
-    throw EvalException::ParserError();
-  Operator o = O.top();
-  O.pop();
-
-  /* This operator must be neither a parenthesis, nor a number, nor STOP. */
-  if (o.type() < Operator::UNARY_PLUS)
-    throw EvalException::ParserError();
-
-  /* Collect the children ASTs from the AST stack, and combine them with the
-   * operator to push a new AST to the AST stack. */
-  std::vector<AST> children;
-
-  unsigned r =  o.arity();
-  while (r--) // repeat r times
-  {
-    if (A.empty())
-      throw EvalException::ParserError();
-    const auto a = A.top();
-    A.pop();
-    children.push_back(a);
-  }
-  std::reverse(children.begin(), children.end()); // reverse the children order
-  A.push(AST(o, children));
 }
 
 long Parser::eval() const
@@ -134,7 +104,7 @@ long Parser::eval() const
   std::stack<long> numbers;
   for (const auto& o : RPN)
   {
-    if (o.type() == Operator::NUMBER)
+    if (o.is_number())
       numbers.push(o.eval());
 
     unsigned r = o.arity();
@@ -162,4 +132,34 @@ long Parser::eval() const
   if (numbers.size() != 1) // should not occur, since our AST is valid
     throw EvalException::ParserError();
   return numbers.top();
+}
+
+void Parser::pop_operator_and_add_node(\
+    std::stack<Operator>& O, std::stack<AST>& A) const
+{
+  /* Pop an operator from the operator stack. */
+  if (O.empty())
+    throw EvalException::ParserError();
+  Operator o = O.top();
+  O.pop();
+
+  /* This operator must be neither a parenthesis, nor a number, nor STOP. */
+  if (!o.is_operator())
+    throw EvalException::ParserError();
+
+  /* Collect the children ASTs from the AST stack, and combine them with the
+   * operator to push a new AST to the AST stack. */
+  std::vector<AST> children;
+
+  unsigned r =  o.arity();
+  while (r--) // repeat r times
+  {
+    if (A.empty())
+      throw EvalException::ParserError();
+    const auto a = A.top();
+    A.pop();
+    children.push_back(a);
+  }
+  std::reverse(children.begin(), children.end()); // reverse the children order
+  A.push(AST(o, children));
 }

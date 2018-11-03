@@ -81,11 +81,7 @@ class Tree
 
   /**
    * Top-to-bottom constructor: construct a tree from a table.
-   *
-   * [...] TODO: complete the docstring
-   *
    * If the table in invalid, throw a TreeException::InvalidTable exception.
-   *
    * An empty table (default case) can also be used to construct an empty tree.
    */
   Tree(const Table<T>& table = {});

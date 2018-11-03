@@ -53,6 +53,7 @@ namespace EvalException
   struct BadArgument : public BaseException
   {
     virtual Code code() const override;
+    virtual const char* what() const throw() override;
   };
 
   /**
@@ -81,24 +82,6 @@ namespace EvalException
    * Some examples: 1/0, 0/0, 1%0, or 0^(-2).
    */
   struct DivisionByZero : public ArithmeticError
-  {
-    virtual const char* what() const throw() override;
-  };
-
-  /**
-   * BaseException/BadArgument/EmptyExpression
-   * Thrown if no argument is passed in to the program.
-   */
-  struct EmptyExpression : public BadArgument
-  {
-    virtual const char* what() const throw() override;
-  };
-
-  /**
-   * BaseException/BadArgument/TooManyArguments
-   * Thrown if too many arguments are passed in to the program.
-   */
-  struct TooManyArguments : public BadArgument
   {
     virtual const char* what() const throw() override;
   };
@@ -136,7 +119,7 @@ namespace EvalException
   };
 
   /**
-   * BaseException/BadArgument/LexerError
+   * BaseException/SyntaxError/LexerError
    * Thrown if the lexer finds an invalid symbol.
    */
   struct LexerError : public SyntaxError
@@ -146,7 +129,7 @@ namespace EvalException
   };
 
   /**
-   * BaseException/BadArgument/ParserError
+   * BaseException/SyntaxError/ParserError
    * Thrown if a syntax error is detected by the parser.
    */
   struct ParserError : public SyntaxError

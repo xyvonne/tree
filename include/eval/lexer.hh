@@ -11,9 +11,16 @@ class Lexer
      * Constructor.
      * Store the expression to be read, and set the position (=index in this
      * string) of the character being read to 0.
-     * Call is_valid() (see below) to check the lexical validity of the given
-     * expression. If this fails, throw an EvalException::LexerError
+     * Call is_valid_operator_implementation() (see below) to check if the
+     * operator traits are correctly implemented. If not, throw an
+     * EvalException::BadOperatorImplementation exception.
+     * Remove all whitespaces from the given expression, and then
+     * call is_valid_expression() (see below) to check its lexical validity.
+     * If the expression in invalid, throw an EvalException::LexerError
      * exception.
+     * The implementation is made in such a way that if the constructor
+     * raises any exception, then the Lexer instance is actually constructed
+     * (with possibly bad attribute values) but never used.
      */
     Lexer(std::string expression);
 
@@ -26,7 +33,7 @@ class Lexer
 
   private:
     /// Expression to be split into tokens.
-    const std::string expression_;
+    std::string expression_;
 
     /*
      * Position (index) of the character currently read in the expression.
@@ -41,7 +48,7 @@ class Lexer
      * This method can be made const because the only member attribute it
      * modifies, namely pos_, is mutable.
      */
-   std::string consume_number() const;
+    std::string consume_number() const;
 
     /**
      * If an arithmetic operator or a parenthesis is currently being read,
@@ -57,5 +64,14 @@ class Lexer
     bool is_binary() const;
 
     /// Tell if the expression consists only in digits or valid symbols.
-    bool is_valid() const;
+    bool is_valid_expression() const;
+
+    /// Check if all vectors implementing operator traits have the same size.
+    static bool is_valid_operator_implementation();
+
+    /**
+     * Remove all whitespaces (e.g. ' ', '\n', '\r', '\t') from expression_
+     * before splitting it into tokens.
+     */
+    void remove_whitespaces();
 };

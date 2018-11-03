@@ -6,8 +6,6 @@
 
 /* BinaryTree interface */
 
-// TODO: documentation
-
 template <typename T>
 class BinaryTree : public Tree<T>
 {
