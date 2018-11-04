@@ -1,0 +1,19 @@
+eval is an arithmetic expression evaluator.
+Takes exactly one argument: the expression to evaluate, written in infix
+(=natural) notation, e.g. 2+2.
+The result is printed on the standard output.
+An empty expression with balanced parentheses, e.g. (()), is valid and gives 0.
+Numbers used must be integers (written in base 10). Parentheses and the
+following operators are supported: + (unary and binary), - (unary and binary),
+*, / (integer division), % (modulo) and ^ (power). If the expression includes
+spaces, they are ignored.
+
+Exit codes:
+0: success
+1: lexer error (invalid symbol detected)
+2: parser error: all symbols are valid, but the expression is not well-formed,
+e.g. 1+
+3: division by 0, e.g. 1/0, 0/0, 1%0 or 0^(-1)
+4: bad number of arguments
+5: implementation error -- you should never get this, otherwise there must be
+a bug in the program...

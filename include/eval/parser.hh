@@ -15,18 +15,22 @@ using AST = Tree<Operator>;
 class Parser
 {
   public:
-    /// Constructor. The lexer used by the parser is declared implicitly.
+    /// Constructor. The lexer used by the parser is set automatically.
     Parser(std::string expression);
 
     /**
-     * Evaluate the expression.
+     * Evaluate the expression, using an AST (see below).
      * An expression yielding a valid but empty AST is evaluated as 0.
      */
     long eval() const;
 
   private:
-    /// Lexer needed by the parser.
-    Lexer lexer_;
+    /**
+     * Lexer needed by the parser.
+     * It can be made const, because we only use the next_token() method from
+     * it, which is also made const (see the "lexer.hh" file for details).
+     */
+    const Lexer lexer_;
 
     /**
      * Build the AST corresponding to the expression, using

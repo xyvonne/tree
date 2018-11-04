@@ -1,5 +1,4 @@
-#include <iostream> // error printing
-#include <string>
+#include <iostream>
 
 #include "../../include/eval/eval_error.hh"
 #include "../../include/eval/lexer.hh"

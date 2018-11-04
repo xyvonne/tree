@@ -1,11 +1,11 @@
 #pragma once
 
 #include <functional> // std::function
+#include <iostream> // operator<< overloading
+#include <string>
 #include <vector>
 
 #include "tree_pc.hh"
-
-/* Tree interface */
 
 /**
  * We are working with trees of any size and nodes having any possible arity
@@ -63,9 +63,8 @@ using Nodes = std::vector<Node<T>>;
 template <typename T>
 using Table = std::vector<std::pair<T, std::vector<T>>>;
 
-/**
- * Interface of the class itself.
- */
+/* Tree interface. */
+
 template <typename T>
 class Tree
 {
@@ -86,23 +85,17 @@ class Tree
    */
   Tree(const Table<T>& table = {});
 
-  /// Size of the tree (i.e., its number of nodes).
-  size_t size() const;
-
   /// Depth (=height) of the tree. Equals -1 for an empty tree.
   ssize_t depth() const;
-
-  /// Number of leaves.
-  size_t nb_leaves() const;
 
   /// Number of inner nodes.
   size_t nb_inner_nodes() const;
 
-  /**
-   * Get the value (label) of the root.
-   * If the tree is empty, throw a TreeException::EmptyTree exception.
-   */
-  T root_value() const;
+  /// Number of leaves.
+  size_t nb_leaves() const;
+
+  /// Size of the tree (i.e., its number of nodes).
+  size_t size() const;
 
   /**
    * Get the arity (i.e., the number of children) of the root.
@@ -116,12 +109,27 @@ class Tree
    */
   std::vector<Tree<T>> root_children() const;
 
+ /**
+   * Get the value (label) of the root.
+   * If the tree is empty, throw a TreeException::EmptyTree exception.
+   */
+  T root_value() const;
+
   /**
    * Tree mapping: apply a map f to all nodes of the tree.
    * The result is a new tree with same shape.
    */
   template <typename U>
     Tree<U> map(std::function<U(T)> f) const;
+
+  /// Perform the breadth-first search (BFS) on the tree.
+  std::vector<T> breadth_first_search() const;
+
+  /// Perform the post-order search on the tree.
+  std::vector<T> post_order_search() const;
+
+  /// Perform the pre-order search on the tree.
+  std::vector<T> pre_order_search() const;
 
   /**
    * Developper-friendly representation of the tree
@@ -145,15 +153,6 @@ class Tree
    */
   std::string to_string(const TreePrintCompanion<T>& pc = {}) const;
 
-  /// Perform the pre-order search on the tree.
-  std::vector<T> pre_order_search() const;
-
-  /// Perform the post-order search on the tree.
-  std::vector<T> post_order_search() const;
-
-  /// Perform the breadth-first search (BFS) on the tree.
-  std::vector<T> breadth_first_search() const;
-
   protected:
   /**
    * The nodes of the tree, stored in a vector
@@ -162,17 +161,16 @@ class Tree
   Nodes<T> nodes_;
 
   /**
+   * Perform a breath-first search on the tree,
+   * but return the node ids instead of the node values.
+   */
+  std::vector<size_t> breadth_first_search_ids() const;
+
+  /**
    * Tell if a node given by its id is a leaf.
    * If the id is invalid (out of range), return false.
    */
   bool is_leaf(size_t id) const;
-
-  /**
-   * Perform a post-order / breath-first search on the tree,
-   * but return the node ids instead of the node values.
-   */
-  std::vector<size_t> post_order_search_ids() const;
-  std::vector<size_t> breadth_first_search_ids() const;
 
   /**
    * Return a vector telling whether each node (given by its id) is its
@@ -187,13 +185,20 @@ class Tree
    * (given by its id) in the tree. The root has depth 0.
    */
   std::vector<size_t> node_depths() const;
+
+  /**
+   * Perform a post-order search on the tree,
+   * but return the node ids instead of the node values.
+   */
+  std::vector<size_t> post_order_search_ids() const;
 };
 
 /**
- * Overload the << operator for pretty-printing. Calls Tree<T>::to_string()
- * without parameter (i.e., use the default TreePrintCompanion).
+ * Overload the << operator for pretty-printing. This calls
+ * Tree<T>::to_string() without parameter (i.e., use the default
+ * TreePrintCompanion).
  */
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tree<T>& tree);
 
-#include "tree.hxx" // template class implementation
+#include "tree.hxx" /* template class implementation */

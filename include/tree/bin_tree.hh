@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "tree.hh"
 
 /* BinaryTree interface */
@@ -23,7 +21,7 @@ class BinaryTree : public Tree<T>
 
   std::vector<T> in_order_search() const;
 
-  protected:
+  private:
   /**
    * Perform the in-order search on the BinaryTree,
    * but return the node ids instead of the node values.
@@ -31,4 +29,4 @@ class BinaryTree : public Tree<T>
   std::vector<size_t> in_order_search_ids() const;
 };
 
-#include "bin_tree.hxx" // template class implementation
+#include "bin_tree.hxx" /* template class implementation */

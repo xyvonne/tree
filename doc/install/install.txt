@@ -1,0 +1,9 @@
+To build this project, you only need:
+
+- a Unix/Linux x64 distribution
+- C++14 or more recent
+- g++, the GNU C++ compiler (source files can be compiled manually with a
+different compiler, though).
+
+For the installation, just clone/download this repo, and run make at the
+root of the installation folder. Binary files are generated in this folder too.

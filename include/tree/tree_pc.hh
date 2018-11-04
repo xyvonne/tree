@@ -1,49 +1,47 @@
 #pragma once
 
 #include <functional> // std::function
-#include <vector>
 
-/* TreePrintCompanion interface */
-
-/// PrintFunction<T>: type alias for functions mapping T to std::string
+/// Type alias for functions mapping T to std::string
 template <typename T>
 using PrintFunction = std::function<std::string(T)>;
 
-/// Default printing functions for root, leaves and other nodes.
+/// Default printing functions for leaves, inner nodes and root.
 template <typename T>
-std::string default_print_root(const T& t);
+std::string default_print_leaf(const T& t);
 template <typename T>
 std::string default_print_node(const T& t);
 template <typename T>
-std::string default_print_leaf(const T& t);
+std::string default_print_root(const T& t);
 
-/// The class itself
+/* TreePrintCompanion interface. */
+
 template <typename T>
 class TreePrintCompanion
 {
   public:
     /// Trivial constructor.
     TreePrintCompanion( \
-        const PrintFunction<T>& print_root = default_print_root<T>, \
-        const PrintFunction<T>& print_node = default_print_node<T>, \
         const PrintFunction<T>& print_leaf = default_print_leaf<T>, \
-        int dashes = 2, \
-        int spaces = 1);
+        const PrintFunction<T>& print_node = default_print_node<T>, \
+        const PrintFunction<T>& print_root = default_print_root<T>, \
+        unsigned dashes = 2, \
+        unsigned spaces = 1);
 
     /// Trivial getters.
-    PrintFunction<T> print_root() const;
-    PrintFunction<T> print_node() const;
     PrintFunction<T> print_leaf() const;
-    int dashes() const;
-    int spaces() const;
+    PrintFunction<T> print_node() const;
+    PrintFunction<T> print_root() const;
+    unsigned dashes() const;
+    unsigned spaces() const;
 
   private:
     /// Attributes, as already discussed with the constructor.
-    PrintFunction<T> print_root_;
-    PrintFunction<T> print_node_;
     PrintFunction<T> print_leaf_;
-    const int dashes_;
-    const int spaces_;
+    PrintFunction<T> print_node_;
+    PrintFunction<T> print_root_;
+    const unsigned dashes_;
+    const unsigned spaces_;
 };
 
-#include "tree_pc.hxx" // template class implementation
+#include "tree_pc.hxx" /* template class implementation */

@@ -17,10 +17,11 @@
  * However, in this class, operator traits are also defined for numbers,
  * STOP token and parentheses. They are set to a placeholder value which is
  * never used: this merely makes the implementation more convenient.
- * Every operator has a type, given by the following enumeration, and a value,
- * which is a string. For a number, this value is obvious; for other operators,
- * by convention this value is the empty string, and is never used.
- * Lexer, and only this class, needs to construct Operators instances, and
+ * Every operator has an enumerated type (see the private part of the class),
+ * and a value, which is a string. For a number, this value is obvious; for
+ * other operators, by convention this value is the empty string, and is never
+ * used.
+ * Lexer, and only this class, needs to construct Operator instances, and
  * handle operator types directly. The other classes only need the provided
  * interface (public part).
  */
@@ -60,23 +61,22 @@ class Operator
   long eval(long first) const; // unary operators
   long eval(long first, long second) const; // binary operators
 
-  /// Represent an Operator instance as a string.
-  std::string to_string() const;
-
   /**
    * Operator equality. We need this operator== overloading to construct
    * Tree<Operator> objects (a.k.a. ASTs).
    */
   bool operator==(const Operator& other) const;
+  bool operator!=(const Operator& other) const;
 
   /**
    * Operator precedence in the sense of Shunting-yard Algorithm:
-   * roughly speaking, o1 > o2 if o1 has higher precedence
+   * roughly speaking, o1 >= o2 if o1 has higher precedence
    * (in the usual sense) than o2, or if o1 and o2 have the same precedence
    * and o1 is right associative.
    * (Actually, there is an extra condition for parentheses, please refer
    * to the implementation for full details.)
    */
+  bool operator<(const Operator& other) const;
   bool operator>(const Operator& other) const;
 
   private:

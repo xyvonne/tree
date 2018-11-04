@@ -1,6 +1,4 @@
 #include <algorithm> // std::reverse
-#include <stack>
-#include <string>
 
 #include "../../include/eval/eval_error.hh"
 #include "../../include/eval/lexer.hh"
@@ -158,8 +156,9 @@ void Parser::pop_operator_and_add_node(\
       throw EvalException::ParserError();
     const auto a = A.top();
     A.pop();
-    children.push_back(a);
+    children.push_back(a); // this puts the children in the wrong order ...
   }
-  std::reverse(children.begin(), children.end()); // reverse the children order
+
+  std::reverse(children.begin(), children.end()); // ... so we reverse them
   A.push(AST(o, children));
 }

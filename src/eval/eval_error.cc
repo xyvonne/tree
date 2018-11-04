@@ -1,5 +1,3 @@
-#include <exception>
-
 #include "../../include/eval/eval_error.hh"
 
 namespace EvalException
@@ -17,7 +15,7 @@ namespace EvalException
   }
   const char* BadArgument::what() const throw()
   {
-    return "[ERROR 4] Wrong number of arguments. Usage: ./eval <expression>";
+    return "[ERROR 4] Bad number of arguments. Usage: ./eval <expression>";
   }
 
   /* BadImplementation */

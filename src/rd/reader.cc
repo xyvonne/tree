@@ -1,9 +1,7 @@
 #include <cerrno>
 #include <dirent.h>
 #include <stack>
-#include <string>
 #include <system_error>
-#include <vector>
 
 #include "../../include/rd/reader.hh"
 

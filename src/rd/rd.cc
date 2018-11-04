@@ -1,6 +1,6 @@
-#include <functional>
+#include <functional> // std::function
 #include <iostream>
-#include <system_error>
+#include <system_error> // std::error_condition
 
 #include "../../include/rd/reader.hh"
 #include "../../include/tree/tree.hh"
@@ -13,7 +13,7 @@ std::string check_args(int argc, char* argv[])
 
   if (argc != 2)
   {
-    std::cerr << "Usage: rd <path>\n";
+    std::cerr << "Usage: ./rd <path>\n";
     exit(2);
   }
 
@@ -37,10 +37,10 @@ std::string read_directory(const std::string& path)
 
   /* TreePrintCompanion setup. */
   std::function<std::string(std::string)> \
-    print_node = [](std::string x) { return x; };
+    print_leaf = [](std::string x) { return x; };
   std::function<std::string(std::string)> \
     print_root = [&path](std::string x) { (void) x; return path; };
-  TreePrintCompanion<std::string> pc(print_root, print_node, print_node);
+  TreePrintCompanion<std::string> pc(print_leaf, print_leaf, print_root);
 
   /* Generate the string to be pretty-printed. */
   std::string s = tree2.to_string(pc) + "\n";
@@ -51,7 +51,8 @@ std::string read_directory(const std::string& path)
 /* Main function. */
 int main(int argc, char* argv[])
 {
-  const std::string path = check_args(argc, argv);
+  const std::string path = check_args(argc, argv); // can fail and exit(2)
+
   try
   {
     std::cout << read_directory(path);

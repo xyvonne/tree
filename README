@@ -1,46 +1,10 @@
-Here is an implementation in C++14 of trees with generic type (the same type
+This is an implementation in C++14 of trees with generic type (the same type
 for each node and leaf) and arbitrary arity (number of children).
+Compiling the source code yields the following binary files:
 
-We provide 3 apps called demo, eval, and rd.
+* demo: a little demonstration for the Tree and BinaryTree classes.
+* eval: an arithmetic expression evaluator.
+* rd: a directory recursive listing utility, like the UNIX/MS-DOS "tree".
 
-We discuss them briefly here. For further information, please refer to all
-header files, located at ./include, and to "tree.hh" in particular.
-
-Requirements
-------------
-- A Unix/Linux x64 distribution.
-- C++14 or more recent.
-- g++, the GNU C++ compiler. Source files can be compiled manually with a
-different compiler, though.
-
-Installation
-------------
-Clone/download this repo, and run make.
-Binary files are generated at the root of the installation folder.
-
-demo
-----
-Little demonstration for our Tree and BinaryTree classes.
-
-eval
-----
-<Implementation and documentation to come>
-
-rd
---
-A directory recursive listing utility.
-This is our own implementation of the main part of the well-known Unix/DOS
-utility "tree":
-https://en.wikipedia.org/wiki/Tree_(command)#cite_note-5
-
-"./rd" is equivalent to "./rd .".
-"./rd path" is equivalent to "tree path -d -I .",
-so only visible directories (those who do not start with '.') are listed.
-
-rd takes at most 1 argument, and prints errors on stderr (whereas tree prints
-errors on stdout).
-
-Exit codes:
-0: success
-1: the given argument is not a directory, or an I/O error occured
-2: too many arguments
+A comprehensive documentation about the usage and the implementation can be
+found in the ./doc folder.

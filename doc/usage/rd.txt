@@ -1,0 +1,16 @@
+rd is a directory recursive listing utility.
+It is an implementation of the main part of the well-known Unix/MS-DOS
+utility "tree":
+https://en.wikipedia.org/wiki/Tree_(command)#cite_note-5
+
+"./rd" is equivalent to "./rd .".
+"./rd path" is equivalent to "tree path -d -I .",
+so only visible directories (those who do not start with '.') are listed.
+
+rd takes at most 1 argument, and prints errors on stderr (whereas tree prints
+errors on stdout).
+
+Exit codes:
+0: success
+1: the given argument is not a directory, or an I/O error occured
+2: too many arguments

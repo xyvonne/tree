@@ -1,8 +1,6 @@
 #pragma once
 
-#include "bin_tree.hh" // template class interface
-
-/* BinaryTree implementation */
+#include "bin_tree.hh" /* template class interface */
 
 template <typename T>
 BinaryTree<T>::BinaryTree(const Table<T>& table)
@@ -26,13 +24,13 @@ BinaryTree<T>::BinaryTree(const T& t, \
 {}
 
 template <typename T>
-template <typename U>
-BinaryTree<U> BinaryTree<T>::map(std::function<U(T)> f) const
+std::vector<T> BinaryTree<T>::in_order_search() const
 {
-  BinaryTree<U> tree;
-  for (const auto& node : Tree<T>::nodes_)
-    tree.Tree<U>::nodes_.push_back({f(node.first), node.second});
-  return tree;
+  std::vector<size_t> sorted_ids = in_order_search_ids();
+  std::vector<T> out;
+  for (const auto& id : sorted_ids)
+    out.push_back(Tree<T>::nodes_[id].first);
+  return out;
 }
 
 template <typename T>
@@ -66,7 +64,7 @@ std::vector<size_t> BinaryTree<T>::in_order_search_ids() const
   {
     /*
      * Push the current node id onto the stack, and replace it by its left
-     * child until we get a "null" node.
+     * child until we get a null id.
      */
     while (id)
     {
@@ -81,9 +79,9 @@ std::vector<size_t> BinaryTree<T>::in_order_search_ids() const
       break;
 
     /*
-     * Pop one (modified id) node from the stack, add the true id to the output,
-     * and replace this node with its right child if it exists
-     * (or with 0 otherwise).
+     * Pop one (modified id) node from the stack, add the true id to the
+     * output, and replace this node with its right child if it exists
+     * (or with a null id otherwise).
      */
     id = stack.top();
     stack.pop();
@@ -98,11 +96,11 @@ std::vector<size_t> BinaryTree<T>::in_order_search_ids() const
 }
 
 template <typename T>
-std::vector<T> BinaryTree<T>::in_order_search() const
+template <typename U>
+BinaryTree<U> BinaryTree<T>::map(std::function<U(T)> f) const
 {
-  std::vector<size_t> sorted_ids = in_order_search_ids();
-  std::vector<T> out;
-  for (const auto& id : sorted_ids)
-    out.push_back(Tree<T>::nodes_[id].first);
-  return out;
+  BinaryTree<U> tree;
+  for (const auto& node : Tree<T>::nodes_)
+    tree.Tree<U>::nodes_.push_back({f(node.first), node.second});
+  return tree;
 }

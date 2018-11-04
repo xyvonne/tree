@@ -1,6 +1,4 @@
 #include <math.h> // pow
-#include <string>
-#include <vector>
 
 #include "../../include/eval/eval_error.hh"
 #include "../../include/eval/operator.hh"
@@ -25,10 +23,9 @@ Operator::Operator(Type type, const std::string& value)
 
 long Operator::eval() const
 {
-  if (is_number())
-    return std::stol(value_);
-  else // invalid operator
+  if (!is_number()) // invalid operator
     throw EvalException::BadOperatorArguments();
+  return std::stol(value_);
 }
 
 long Operator::eval(long first) const
@@ -88,24 +85,28 @@ long Operator::eval(long first, long second) const
   }
 }
 
-std::string Operator::to_string() const
-{
-  /* std::string(1, c) explicitly converts a character c to a string. */
-  return is_number() ? value_ : std::string(1, symbol());
-}
-
-/* Operator overloading */
+/* Operator overloading. */
 
 bool Operator::operator==(const Operator& other) const
 {
   return (type_ == other.type_ and !value_.compare(other.value_));
 }
 
+bool Operator::operator!=(const Operator& other) const
+{
+  return not(*this == other);
+}
+
+bool Operator::operator<(const Operator& other) const
+{
+  return other > *this;
+}
+
 bool Operator::operator>(const Operator& other) const
 {
- return \
-   (other.is_operator()) \
-   and (!is_right_parenthesis()) \
-   and (precedence() > other.precedence() \
-       or (precedence() == other.precedence() and !binding()));
+  return \
+    (other.is_operator()) \
+    and (!is_right_parenthesis()) \
+    and (precedence() > other.precedence() \
+        or (precedence() == other.precedence() and !binding()));
 }

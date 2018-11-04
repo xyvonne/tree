@@ -1,14 +1,14 @@
-#include <functional>
+#include <functional> // std::function
 #include <iostream>
 
 #include "../../include/tree/bin_tree.hh"
 
-/* Type aliases. */
+/* Type aliases. Note that we choose 2 different types for the nodes. */
 using AST = BinaryTree<std::string>;
 using Tre = Tree<int>;
 
 /*
- * Common part for both demos.
+ * Common part for both demos (Tre and AST).
  */
 template <typename T>
 void demo_core \
@@ -18,12 +18,13 @@ void demo_core \
         const std::function<T(T)>& mapped_function,
         const std::string& mapping_msg)
 {
+  /* Header: "Tree demo" or "BinaryTree demo". */
   std::cout << header;
 
   /* Printing. */
   std::cout << "Tree representation:\n" << tree.represent(pc);
   std::cout << "\nDefault tree pretty-printing:\n" << tree;
-  std::cout << "\nPretty tree pretty-printing:\n" << tree.to_string(pc);
+  std::cout << "\nNice tree pretty-printing:\n" << tree.to_string(pc);
 
   /* Statistics. */
   std::cout << "\nStatistics:";
@@ -50,8 +51,8 @@ void demo_core \
       << children[i].to_string(pc) << "\n";
 
   /* Mapping. */
-  std::cout << mapping_msg;
-  std::cout << tree.map(mapped_function).to_string(pc);
+  std::cout << mapping_msg; // "Applying <such function> to the tree..."
+  std::cout << tree.map(mapped_function).to_string(pc); // Show the mapped tree
 
   /* Traversing. */
   std::cout << "\nTraversals of the original tree:";
@@ -81,7 +82,7 @@ void binary_tree_demo()
     = [](std::string x) { return x; };
   std::function<std::string(std::string)> n \
     = [](std::string x) { return "[" + x + "]"; };
-  TreePrintCompanion<std::string> pc(n, n, l, 0, 1);
+  TreePrintCompanion<std::string> pc(l, n, n, 0, 1);
 
   /* Mapping setup. */
   std::function<std::string(std::string)> mapped_function \
@@ -103,7 +104,7 @@ void binary_tree_demo()
   /* Run the demo. */
   demo_core<std::string>(header, ast, pc, mapped_function, mapping_msg);
 
-  /* Specific part for binary trees: in-order search. */
+  /* Specific part for BinaryTree: in-order search. */
   std::cout << "\nIn-order search: ";
   for (const auto& x : ast.in_order_search())
     std::cout << x << " ";
@@ -123,7 +124,7 @@ void generic_tree_demo()
     = [](int x) { return "[" + std::to_string(x) + "]"; };
   std::function<std::string(int)> r \
     = [](int x) { return "[[" + std::to_string(x) + "]]"; };
-  TreePrintCompanion<int> pc(r, n, l, 0, 1);
+  TreePrintCompanion<int> pc(l, n, r, 0, 1);
 
   /* Mapping setup. */
   std::function<int(int)> mapped_function = [](int x){ return -x; };
@@ -150,7 +151,6 @@ void generic_tree_demo()
 /*
  * Main function.
  */
-
 int main(void)
 {
   generic_tree_demo();

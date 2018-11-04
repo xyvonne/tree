@@ -1,6 +1,7 @@
 CXX = g++
 CXXFLAGS = -o3 -Wall -Wextra -Werror -pedantic -std=c++14
 
+CPATH = include/eval include/rd/ include/tree/
 VPATH = src/eval src/rd/ src/tree/
 
 DEMO_OBJS = demo.o
@@ -22,7 +23,7 @@ eval: $(EVAL_OBJS) $(TREE_OBJS)
 rd: $(RD_OBJS) $(TREE_OBJS)
 	$(CXX) $^ -o $@
 
-clean: $(EXECS) $(OBJS)
-	${RM} $^
+clean:
+	${RM} $(OBJS) $(EXECS)
 
-.PHONY: clean
+.PHONY: all clean

@@ -1,0 +1,3 @@
+demo is, at its name says, a file that just runs a little demonstration for
+the Tree and BinaryTree classes.
+Exit code: 0.

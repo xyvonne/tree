@@ -1,9 +1,8 @@
 #pragma once
 
-#include "tree_pc.hh" // template class interface
+#include "tree_pc.hh" /* template class interface */
 
-/* TreePrintCompanion implementation */
-
+/* It looks like it is not be possible to define template lambdas ... */
 template <typename T>
 std::string default_print_leaf(const T& t)
 {
@@ -27,12 +26,12 @@ std::string default_print_root(const T& t)
 
 template <typename T>
 TreePrintCompanion<T>::TreePrintCompanion( \
-    const PrintFunction<T>& print_root, \
-    const PrintFunction<T>& print_node, \
     const PrintFunction<T>& print_leaf, \
-    int dashes, \
-    int spaces)
-: print_root_(print_root), print_node_(print_node), print_leaf_(print_leaf), \
+    const PrintFunction<T>& print_node, \
+    const PrintFunction<T>& print_root, \
+    unsigned dashes, \
+    unsigned spaces)
+: print_leaf_(print_leaf), print_node_(print_node), print_root_(print_root), \
     dashes_(dashes), spaces_(spaces)
 {}
 
@@ -55,13 +54,13 @@ PrintFunction<T> TreePrintCompanion<T>::print_root() const
 }
 
 template <typename T>
-int TreePrintCompanion<T>::dashes() const
+unsigned TreePrintCompanion<T>::dashes() const
 {
   return dashes_;
 }
 
 template <typename T>
-int TreePrintCompanion<T>::spaces() const
+unsigned TreePrintCompanion<T>::spaces() const
 {
   return spaces_;
 }
