@@ -6,5 +6,5 @@ Compiling the source code yields the following binary files:
 * eval: an arithmetic expression evaluator.
 * rd: a directory recursive listing utility, like the UNIX/MS-DOS "tree".
 
-A comprehensive documentation about the usage and the implementation can be
-found in the ./doc folder.
+A comprehensive documentation about the project layout, as well with the
+usage and the implementation, can be found in the ./doc folder.

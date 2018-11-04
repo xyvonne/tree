@@ -5,6 +5,7 @@ This folder and its subfolders contain the following files:
 ./implem/rd.txt: detailed implementation of the rd program
 ./implem/tree.txt: goal and detailed implementation of trees
 ./install/install.txt: installation directions
+./layout/layout.txt: project layout
 ./usage/demo.txt: goal and usage of the demo program
 ./usage/eval.txt: goal and usage of the eval program
 ./usage/rd.txt: goal and usage of the rd program

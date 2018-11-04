@@ -1,0 +1,32 @@
+When built, the project layout is as follows:
+
+.
+├── build
+│   ├── demo
+│   ├── eval
+│   └── rd
+├── doc
+│   ├── implem
+│   ├── install
+│   ├── layout
+│   └── usage
+├── include
+│   ├── eval
+│   ├── rd
+│   └── tree
+└── src
+    ├── demo
+    ├── eval
+    ├── rd
+    └── tree
+
+The names demo, eval and rd refer to the corresponding apps (binary files).
+
+./build: object files (*.o). Can be safely deleted.
+./doc: documentation. Please read the ./doc/README for more details.
+./include: headers (*.hh) and template class implementation files (*.hxx).
+./include/tree: BinaryTree and Tree class implementation.
+./src: implementation files (*.cc).
+
+The root folder also contains the binary files, along with AUTHORS, README and
+Makefile with self-explicit purposes.

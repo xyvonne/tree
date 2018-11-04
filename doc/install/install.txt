@@ -1,9 +1,17 @@
 To build this project, you only need:
-
 - a Unix/Linux x64 distribution
+- GNU Make
 - C++14 or more recent
 - g++, the GNU C++ compiler (source files can be compiled manually with a
 different compiler, though).
 
-For the installation, just clone/download this repo, and run make at the
-root of the installation folder. Binary files are generated in this folder too.
+For installation, just clone/download this repo, and run make at the root of
+the installation folder. Binary files are placed in this folder too.
+
+The Makefile provided includes the following rules:
+- all: default and main rule: generate all the 3 binary files: demo, eval, rd.
+- demo: generate the binary file demo.
+- eval: generate the binary file eval.
+- rd: generate the binary file rd.
+- clean: remove the ./build directory (object files). Binary files are kept.
+- mrproper: remove the ./build directory and the binary files.
