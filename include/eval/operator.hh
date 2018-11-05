@@ -62,8 +62,8 @@ class Operator
   long eval(long first, long second) const; // binary operators
 
   /**
-   * Operator equality. We need this operator== overloading to construct
-   * Tree<Operator> objects (a.k.a. ASTs).
+   * Equality operator and its negation for Operator instances. We need this
+   * operator== overloading to construct Tree<Operator> objects (a.k.a. ASTs).
    */
   bool operator==(const Operator& other) const;
   bool operator!=(const Operator& other) const;
@@ -72,12 +72,12 @@ class Operator
    * Operator precedence in the sense of Shunting-yard Algorithm:
    * roughly speaking, o1 >= o2 if o1 has higher precedence
    * (in the usual sense) than o2, or if o1 and o2 have the same precedence
-   * and o1 is right associative.
+   * and o1 is right-associative.
    * (Actually, there is an extra condition for parentheses, please refer
    * to the implementation for full details.)
    */
-  bool operator<(const Operator& other) const;
-  bool operator>(const Operator& other) const;
+  bool operator<=(const Operator& other) const;
+  bool operator>=(const Operator& other) const;
 
   private:
   /// Operator type enumeration.
@@ -97,7 +97,13 @@ class Operator
     POWER
   };
 
-  /// Operator traits (note that they are class attributes).
+  /**
+   * Operator traits (these are class attributes).
+   * Elements of the Type enumeration above can be directly used as indexes
+   * for the following vectors to access to the corresponding operator traits.
+   * Binding is stored as a Boolean, set to true if the operator binds from
+   * left to right, and to false otherwise.
+   */
   static const std::vector<unsigned> arities;
   static const std::vector<bool> bindings;
   static const std::vector<unsigned> precedences;

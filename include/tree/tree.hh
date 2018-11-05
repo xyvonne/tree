@@ -36,7 +36,7 @@
  *
  * A (generic) tree is implemented as follows. Its only attribute is the
  * vector of its nodes, sorted w.r.t. pre-order search. A node is a pair
- * consisting of a label (=value) and a vector of ids. The id of a node is its
+ * consisting in a label (=value) and a vector of ids. The id of a node is its
  * rank (starting from 0) given by pre-order search. In the aforementioned
  * vector of ids, the parent id comes first (the parent of the root being the
  * root itself); then comes the id of the current node, and lastly the ids of

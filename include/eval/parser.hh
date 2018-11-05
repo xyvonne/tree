@@ -5,10 +5,10 @@
 
 #include "lexer.hh"
 #include "operator.hh"
-#include "../../include/tree/tree.hh"
+#include "../tree/bin_tree.hh"
 
 /* Type alias for ASTs. */
-using AST = Tree<Operator>;
+using AST = BinaryTree<Operator>;
 
 /* Class interface. */
 
@@ -19,8 +19,14 @@ class Parser
     Parser(std::string expression);
 
     /**
-     * Evaluate the expression, using an AST (see below).
+     * Evaluate the expression, using an AST which is a BinaryTree (see the
+     * documentation of this class).
      * An expression yielding a valid but empty AST is evaluated as 0.
+     * Throw an EvalException::BadOperatorImplementation exception if the
+     * expression cannot be evaluated. Actually, this must not happen here,
+     * because if the expression in invalid, then while building the AST,
+     * pop_operator_and_add_node() (see below) must throw the same exception
+     * before.
      */
     long eval() const;
 
@@ -28,7 +34,7 @@ class Parser
     /**
      * Lexer needed by the parser.
      * It can be made const, because we only use the next_token() method from
-     * it, which is also made const (see the "lexer.hh" file for details).
+     * it, which is also made const (see the Lexer class for details).
      */
     const Lexer lexer_;
 
@@ -51,6 +57,10 @@ class Parser
      * AST we want (if the stack is empty, just return an empty AST too).
      * If any step from this algorithm fails, an EvalException::ParserError is
      * thrown.
+     * If pop_operator_and_add_node() meets a non-unary and
+     * non-binary operator (this must not happen, because the Lexer instance
+     * has already checked this), it thrown an
+     * EvalException::BadOperatorImplementation exception.
      */
     AST ast() const;
     void pop_operator_and_add_node(\

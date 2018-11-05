@@ -1,10 +1,7 @@
-#include <algorithm> // std::reverse
-
 #include "../../include/eval/eval_error.hh"
 #include "../../include/eval/lexer.hh"
 #include "../../include/eval/operator.hh"
 #include "../../include/eval/parser.hh"
-#include "../../include/tree/tree.hh"
 
 Parser::Parser(std::string expression)
   : lexer_(Lexer(expression))
@@ -64,7 +61,7 @@ AST Parser::ast() const
           O.pop();
         break;
       }
-      if (o1 > o2)
+      if (o1 >= o2)
         break;
       pop_operator_and_add_node(O, A);
     }
@@ -103,20 +100,23 @@ long Parser::eval() const
   for (const auto& o : RPN)
   {
     if (o.is_number())
+    {
       numbers.push(o.eval());
+      continue;
+    }
 
     unsigned r = o.arity();
     if (numbers.size() < r)
       throw EvalException::ParserError();
 
-    if (o.arity() == 1)
+    if (r == 1)
     {
       long first = numbers.top();
       numbers.pop();
       numbers.push(o.eval(first));
     }
 
-    if (o.arity() == 2)
+    else if (r == 2)
     {
       long second = numbers.top();
       numbers.pop();
@@ -124,6 +124,9 @@ long Parser::eval() const
       numbers.pop();
       numbers.push(o.eval(first, second));
     }
+
+    else // should not occur, since our AST is a valid BinaryTree
+      throw EvalException::BadOperatorImplementation();
   }
 
   /* Get the result. */
@@ -149,16 +152,26 @@ void Parser::pop_operator_and_add_node(\
    * operator to push a new AST to the AST stack. */
   std::vector<AST> children;
 
-  unsigned r =  o.arity();
-  while (r--) // repeat r times
+  unsigned r = o.arity();
+  if (A.size() < r)
+    throw EvalException::ParserError();
+
+  if (r == 1)
   {
-    if (A.empty())
-      throw EvalException::ParserError();
-    const auto a = A.top();
+    AST right = A.top();
     A.pop();
-    children.push_back(a); // this puts the children in the wrong order ...
+    A.push(AST(o, right));
   }
 
-  std::reverse(children.begin(), children.end()); // ... so we reverse them
-  A.push(AST(o, children));
+  else if (r == 2)
+  {
+    AST right = A.top();
+    A.pop();
+    AST left = A.top();
+    A.pop();
+    A.push(AST(o, left, right));
+  }
+
+  else // by design, operators with arity > 2 are not supported
+    throw EvalException::BadOperatorImplementation();
 }

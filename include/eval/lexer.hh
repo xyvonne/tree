@@ -12,14 +12,15 @@ class Lexer
      * Store the expression to be read, and set the position (=index in this
      * string) of the character being read to 0.
      * Call is_valid_operator_implementation() (see below) to check if the
-     * operator traits are correctly implemented. If not, throw an
+     * operator traits are correctly implemented (only unary and binary
+     * operators are supported). If not, throw an
      * EvalException::BadOperatorImplementation exception.
      * Remove all whitespaces from the given expression, and then
      * call is_valid_expression() (see below) to check its lexical validity.
      * If the expression in invalid, throw an EvalException::LexerError
      * exception.
      * The implementation is made in such a way that if the constructor
-     * raises any exception, then the Lexer instance is actually constructed
+     * throws any exception, then the Lexer instance is actually constructed
      * (with possibly bad attribute values) but never used.
      */
     Lexer(std::string expression);
@@ -66,12 +67,15 @@ class Lexer
     /// Tell if the expression consists only in digits or valid symbols.
     bool is_valid_expression() const;
 
-    /// Check if all vectors implementing operator traits have the same size.
-    static bool is_valid_operator_implementation();
+    /**
+     * Check that all vectors implementing operator traits have the same size,
+     * and all operators are either unary or binary.
+     */
+     static bool is_valid_operator_implementation();
 
     /**
      * Remove all whitespaces (e.g. ' ', '\n', '\r', '\t') from expression_
-     * before splitting it into tokens.
+     * before next_token() splits it into tokens.
      */
     void remove_whitespaces();
 };

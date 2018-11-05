@@ -94,10 +94,26 @@ bool Lexer::is_valid_expression() const
 
 bool Lexer::is_valid_operator_implementation()
 {
-  return \
-    Operator::arities.size() == Operator::bindings.size()
-    and Operator::arities.size() == Operator::precedences.size()
-    and Operator::arities.size() == Operator::symbols.size();
+  /* Check that all vectors implementing operator traits have the same size. */
+  if (
+      Operator::arities.size() != Operator::bindings.size()
+    or Operator::arities.size() != Operator::precedences.size()
+    or Operator::arities.size() != Operator::symbols.size()
+    )
+    return false;
+
+  /**
+   * Check that all arithmetic operators are either unary or binary.
+   * In Operator::arities, all these operators have an index >= 4, whence the
+   * start of the loop.
+   */
+  for (size_t i = 4; i < Operator::arities.size(); i++)
+  {
+    if (Operator::arities[i] != 1 and Operator::arities[i] != 2)
+      return false;
+  }
+
+  return true;
 }
 
 Operator Lexer::next_token() const

@@ -97,12 +97,12 @@ bool Operator::operator!=(const Operator& other) const
   return not(*this == other);
 }
 
-bool Operator::operator<(const Operator& other) const
+bool Operator::operator<=(const Operator& other) const
 {
-  return other > *this;
+  return other >= *this;
 }
 
-bool Operator::operator>(const Operator& other) const
+bool Operator::operator>=(const Operator& other) const
 {
   return \
     (other.is_operator()) \

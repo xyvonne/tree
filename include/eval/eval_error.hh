@@ -100,8 +100,9 @@ namespace EvalException
   /**
    * BaseException/BadImplementation/BadOperatorImplementation
    * Thrown if the operators are not well-defined in "operator.cc",
-   * for example if the sizes of the vectors referring to arities,
-   * bindings, operator names, precedences and symbols do not match.
+   * e.g. if the sizes of the vectors referring to arities,
+   * bindings, operator names, precedences and symbols do not match,
+   * or if any operator is neither unary nor binary.
    */
   struct BadOperatorImplementation : public BadImplementation
   {
