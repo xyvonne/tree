@@ -1,9 +1,11 @@
 #include <cerrno>
 #include <dirent.h>
+#include <functional> // std::function
 #include <stack>
 #include <system_error>
 
 #include "../../include/rd/reader.hh"
+#include "../../include/tree/tree.hh"
 
 DirectoryReader::DirectoryReader(const Path& path)
   : path_(path)
@@ -12,6 +14,31 @@ DirectoryReader::DirectoryReader(const Path& path)
 DirectoryReader::DirectoryReader(const String& string)
   : path_(string.c_str()) // .c_str(): convert a std::string to a char*
 {}
+
+std::string DirectoryReader::read_directory() const
+{
+  /* Read the directory table, and generate a tree from it. */
+  auto tree = Tree<String>(table());
+
+  /* Keep only the basename from a directory, e.g. replace a/b/c/d with d */
+  std::function<String(String)> keep_basenames_only = [](String s)
+  {
+    size_t idx = s.rfind("/");
+    return (idx == std::string::npos) ? s : s.substr(idx + 1);
+  };
+  auto tree2 = tree.map(keep_basenames_only);
+
+  /* TreePrintCompanion setup. */
+  std::function<String(String)> print_leaf = [](String x) { return x; };
+  std::function<String(String)> \
+    print_root = [this](String x) { (void) x; return path_; };
+  TreePrintCompanion<String> pc(print_leaf, print_leaf, print_root);
+
+  /* Generate the string to be pretty-printed. */
+  std::string s = tree2.to_string(pc) + "\n";
+  s += std::to_string(tree2.size() - 1) + " directories\n";
+  return s;
+}
 
 /*
  * Reference: http://pubs.opengroup.org/onlinepubs/7908799/xsh/readdir.html

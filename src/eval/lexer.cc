@@ -140,10 +140,11 @@ void Lexer::remove_whitespaces()
      expression_ += c;
 
 #if 0
-  /* Less naive implementation:
+  /*
+   * Less naive implementation:
    * https://www.gamedev.net/forums/topic/359650-remove-whitespace-from-string/
    */
-#include<algorithm>
+#include <algorithm>
   expression_.erase(\
       remove_if(expression_.begin(), expression_.end(), ::isspace), \
       expression_.end());

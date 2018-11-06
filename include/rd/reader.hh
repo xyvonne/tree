@@ -46,12 +46,8 @@ class DirectoryReader
     DirectoryReader(const Path& path = ".");
     DirectoryReader(const String& string = ".");
 
-    /**
-     * Store the directory search into a table, and return it.
-     * Throw a std::error_condition exception if opening the top directory
-     * fails.
-     */
-    Table<String> table() const;
+    /// Read the directory tree, and return the result as a string.
+    std::string read_directory() const;
 
   private:
     /// Top directory path.
@@ -65,4 +61,11 @@ class DirectoryReader
      * return an empty vector instead.
      */
     static std::vector<String> subdirectories(const String& current_dir);
+
+    /**
+     * Store the directory search into a table, and return it.
+     * Throw a std::error_condition exception if opening the top directory
+     * fails.
+     */
+    Table<String> table() const;
 };
