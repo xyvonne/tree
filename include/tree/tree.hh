@@ -31,8 +31,8 @@
  * add a node (anywhere else than on the top of the tree).
  *
  *  As a special category of trees, binary trees are implemented through the
- *  derived class BinaryTree<T>. Please refer to "bin_tree.hh" for more
- *  details.
+ *  derived class BinaryTree. Please refer to the documentation of this
+ *  class for more details.
  *
  * A (generic) tree is implemented as follows. Its only attribute is the
  * vector of its nodes, sorted w.r.t. pre-order search. A node is a pair

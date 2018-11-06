@@ -1,4 +1,4 @@
-rd is a directory recursive listing utility.
+rd (for "Read Directory") is a directory recursive listing utility.
 It is an implementation of the main part of the well-known Unix/MS-DOS
 utility "tree":
 https://en.wikipedia.org/wiki/Tree_(command)#cite_note-5

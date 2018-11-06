@@ -1,0 +1,17 @@
+Directory search is entirely made by one class, called DirectoryReader.
+An instance of this class is constructed from the top directory path (i.e.,
+the directory which all subdirectories are to be read from).
+Upon success, the reading yields a table, which is actually a vector of
+(key, value) pairs; here, a key is a directory currently being read, and a
+value is its corresponding vector of (direct) subdirectories.
+In this table, directories are stored as strings in the following format:
+root_path/subdir/subsubdir/... Keeping the whole names makes the keys pairwise
+distinct.
+If an (I/O) error occurs upon reading the top directory, an
+std::error_condition is thrown. If a similar error later occurs, no exception
+is thrown, and an undefined behavior results; most of the times, the result
+will be a valid table, but incomplete.
+Once the table is built, it is directly passed in to the
+Tree<T>::Tree(const Table<T>& table) constructor, and the resulting tree is
+easily pretty-printed with the Tree<T>::to_string() method, yielding the
+desired result.

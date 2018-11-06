@@ -3,28 +3,6 @@
 #include <string>
 #include <vector>
 
-/**
- * Every token returned by the lexer is considered as an operator. Roughly
- * speaking, this class is a union type between numbers, arithmetic operators,
- * and other tokens (parentheses and STOP).
- * Of course, the operator traits (symbol, arity, precedence and binding)
- * only make sense for arithmetic operators, and they are defined here in the
- * usual way.
- * The unary plus (resp. minus) has symbol 'p' (resp. 'm') to distinguish
- * it from its binary counterpart.
- * Binding is stored as a Boolean, set to true if the operator binds from
- * left to right, and to false otherwise.
- * However, in this class, operator traits are also defined for numbers,
- * STOP token and parentheses. They are set to a placeholder value which is
- * never used: this merely makes the implementation more convenient.
- * Every operator has an enumerated type (see the private part of the class),
- * and a value, which is a string. For a number, this value is obvious; for
- * other operators, by convention this value is the empty string, and is never
- * used.
- * Lexer, and only this class, needs to construct Operator instances, and
- * handle operator types directly. The other classes only need the provided
- * interface (public part).
- */
 class Lexer; // forward declaration
 class Operator
 {
@@ -32,8 +10,12 @@ class Operator
 
   public:
   /**
-   * Tell if an Operator instance is respectively a left parenthesis,
-   * number, true arithmetic operator, right parenthesis, or STOP token.
+   * Recall from the documentation class that this class is a kind of
+   * union type between numbers, arithmetic operators, and other tokens
+   * (parentheses and STOP).
+   * The following methods tell if an Operator instance is respectively a left
+   * parenthesis, number, true arithmetic operator, right parenthesis, or STOP
+   * token.
    */
   inline bool is_left_parenthesis() const { return type_ == LEFT_PARENTHESIS; }
   inline bool is_number() const { return type_ == NUMBER; }
@@ -41,7 +23,11 @@ class Operator
   inline bool is_right_parenthesis() const {return type_ == RIGHT_PARENTHESIS;}
   inline bool is_stop() const { return type_ == STOP; }
 
-  /// Getters for operator traits.
+  /*
+   * Getters for operator traits.
+   * Recall from the documentation class that binding() returns true if the
+   * operator binds from left to right, and false otherwise.
+   */
   inline unsigned arity() const { return arities[(size_t) type_]; }
   inline bool binding() const { return bindings[(size_t) type_]; }
   inline unsigned precedence() const { return precedences[(size_t) type_]; }

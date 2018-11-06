@@ -39,10 +39,10 @@ AST Parser::ast() const
     }
 
     /*
-     * The core of the Shunting-yard algorithm roughly runs as follows.
-     * If o1 is a right parenthesis, then we pop from the operator stack until
-     * we met a left parenthesis (there must be at least one), and update
-     * the AST stack accordingly.
+     * Recall that the core of the Shunting-yard algorithm roughly runs as
+     * follows. If o1 is a right parenthesis, then we pop from the operator
+     * stack until we met a left parenthesis (there must be at least one),
+     * and update the AST stack accordingly.
      * If o1 has greater precedence than the operator o2 on the top of the
      * stack, then we push o1 to the operator stack.
      * If o1 has lesser precedence than o2, we pop o2 from the operator stack,

@@ -3,7 +3,7 @@
 #include <exception>
 
 /**
- * This is the interface for all our Eval exception classes,
+ * This is the interface for all our EvalException classes,
  * ordered w.r.t. breadth-first search in the hierarchy class tree.
  */
 
@@ -79,7 +79,7 @@ namespace EvalException
   /**
    * BaseException/ArithmeticError/DivisionbyZero
    * Thrown if evaluation leads to a division by 0.
-   * Some examples: 1/0, 0/0, 1%0, or 0^(-2).
+   * Some examples: 1/0, 0/0, 1%0, or 0^(-1).
    */
   struct DivisionByZero : public ArithmeticError
   {
@@ -90,7 +90,7 @@ namespace EvalException
    * BaseException/BadImplementation/BadOperatorArguments
    * Thrown if during operator evaluation, the wrong number of operands
    * (=arguments) are passed in: for example, if only 1 number (instead of 2)
-   * is passed in for a BINARY_PLUS operatation.
+   * is passed in for a BINARY_PLUS operation.
    */
   struct BadOperatorArguments : public BadImplementation
   {

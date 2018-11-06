@@ -1,12 +1,12 @@
 eval is an arithmetic expression evaluator.
-Takes exactly one argument: the expression to evaluate, written in infix
+It takes exactly one argument: the expression to evaluate, written in infix
 (=natural) notation, e.g. 2+2.
 The result is printed on the standard output.
 An empty expression with balanced parentheses, e.g. (()), is valid and gives 0.
 Numbers used must be integers (written in base 10). Parentheses and the
 following operators are supported: + (unary and binary), - (unary and binary),
-*, / (integer division), % (modulo) and ^ (power). If the expression includes
-spaces, they are ignored.
+*, / (integer division), % (remainder) and ^ (power).
+If the expression includes spaces, they are ignored.
 
 Exit codes:
 0: success

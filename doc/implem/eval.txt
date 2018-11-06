@@ -1,0 +1,96 @@
+Our arithmetic evaluator works as follows.
+
+Overview
+--------
+1°) The number of input arguments is checked -- it must be exactly 1.
+2°) The provided expression is read from left to right by a unit called a
+lexer, whose main goal is to check that this expression consists only in
+valid symbols, and to split it into tokens, one token being either an operand
+(=number) an operator.
+3°) Once split into tokens, the expression is analyzed by the next unit called
+a parser. The parser checks that the expression is syntactically valid and if
+it is, evaluates it.
+To check the syntax, the parser builds an Abstract Syntactic Tree
+(AST) whose nodes are operators and leaves are operands. This AST building is
+made by the well-known Dijkstra's Shunting-yard Algrithm, which will be
+described later.
+If the AST construction succeeds, then the expression is valid and can be
+evaluated. To this aim, a post-order search on the AST yields what is called
+RPN (Reverse Polish Notation). Then, RPN evaluation is simply made using a
+stack, we also explain how below.
+
+Detailed implementation
+-----------------------
+For the whole evaluation process, 4 sets of classes are used.
+
+* EvalException::BaseException and its derived classes: error handling.
+  Evaluation may fail for many reasons. Please refer to the "eval_error.hh"
+  header file for a comprehensive description of our exception class hierarchy.
+
+* Lexer: deals with the lexer.
+  Do in order the following steps (the first 2 being only some preprocessing).
+  - Check that the operator traits (see the "operator.cc" source file) are
+    correctly implemented. In particular, all the operators must be either
+    unary or binary, because the user provides an expression in infix
+    (=natural) notation, which operators with arity > 2 make no sense for.
+    (NB: some parts of this checking could also have been left to the parser,
+    but it costs nothing to do it right now; moreover, giving this task to the
+    lexer enables a better encapsulation, as only Lexer needs full access to
+    the Operator class).
+  - Remove all whitespaces from the given expression.
+  - Read it once, to check that only valid symbols were used.
+  - Starting from the first character of the expression, provide on demand the
+    next token to be analysed by the parser.
+
+* Operator: deals with all the tokens returned by the lexer, and "atomic"
+  evaluations (see below).
+  Roughly speaking, this class is a union type between numbers, arithmetic
+  operators, and other tokens (parentheses and STOP).
+  Of course, the operator traits (symbol, arity, precedence and binding)
+  only make sense for arithmetic operators, and they are defined here in the
+  usual way.
+  The unary plus (resp. minus) has symbol 'p' (resp. 'm') to distinguish
+  it from its binary counterpart. However, the user must still write a unary
+  operator with its usual symbol ('+' or '-').
+  Binding is stored as a Boolean, set to true if the operator binds from
+  left to right, and to false otherwise.
+  However, in this class, operator traits are also defined for numbers,
+  STOP token and parentheses. They are set to a placeholder value which is
+  never used: this merely makes the implementation more convenient.
+  Every operator has an enumerated type (see the private part of the class),
+  and a value, which is a string. For a number, this value is obvious; for
+  other operators, by convention this value is the empty string, and is never
+  used.
+  Lexer, and only this class, needs to construct Operator instances, and
+  handle operator types directly. The other classes only need the provided
+  interface (public part).
+  Last but not least: Operator is the class that performs atomic evaluation,
+  i.e. the operation given by an arithmetic operator and the required number
+  of operands. All the job (done in particular by the parser) consists in
+  reducing the evaluation of the complete expression to atomic evaluations.
+
+* Parser: deals with the parser.
+  Recall that the parser builds an AST using Dijkstra's Shunting-yard Algorithm:
+
+  https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+
+  The difference with the classical algorithm presented there, is that we
+  work with a stack of ASTs instead of a queue of numbers. The execution
+  flow is the same, except that:
+  - instead of pushing a number to the number queue, we push onto the AST
+    stack the AST reduced to the node storing this number;
+  - when we pop from the operator stack an operator with arity r,
+    we also pop from the AST stack the last r ASTs, add the operator as a node
+    on the top of them, and push the new AST back onto the stack.
+    Finally, there must be at most one AST left in the stack, which is the
+    AST we want (if at this step the stack is empty, we just return an empty
+    AST too, and evaluate the whole expression as 0).
+
+  If the expression is syntactically valid (and "non-empty"), then it yields a
+  non-empty valid AST, in which a post-order search gives the RPN.
+  The RPN is simply evaluated using a stack. When we meet an operand, we push
+  it onto the stack; when we meet an operator, we pop the required number of
+  operands from the stack, perform the corresponding atomic evaluation, and
+  push back the result onto the stack. We repeat this until the RPN is fully
+  read. At the end, the stack only contains one element, which is the final
+  result.
