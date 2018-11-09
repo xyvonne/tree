@@ -47,7 +47,8 @@ std::string DirectoryReader::read_directory() const
  * the recent C++17 libraries (#include<filesystem> ...), which would have
  * yet simplified our life, and avoided the mix of both C and C++ styles.
  */
-std::vector<String> DirectoryReader::subdirectories(const String& current_dir)
+std::vector<Ptr<String>>
+DirectoryReader::subdirectories(const String& current_dir)
 {
   /* Try to open the directory. */
   DIR* dirp = opendir(current_dir.c_str());
@@ -55,13 +56,16 @@ std::vector<String> DirectoryReader::subdirectories(const String& current_dir)
     return {};
 
   /* If the directory was opened successfully, get its contents. */
-  std::vector<String> out;
+  std::vector<Ptr<String>> out;
   dirent* dp = nullptr;
   while ((dp = readdir(dirp)) != nullptr)
   {
     String subdir = dp->d_name; // convert dp->d_name to a std::string
     if (subdir[0] != '.' and dp->d_type == DT_DIR) // keep only visible dirs
-      out.push_back(current_dir + "/" + subdir); // and push them to the stack
+    {
+      // and push them to the stack
+      out.push_back(std::make_shared<String>(current_dir + "/" + subdir));
+    }
   }
   closedir(dirp);
 
@@ -84,16 +88,16 @@ Table<String> DirectoryReader::table() const
    * Now that we know that 'path_' is a directory, we read recursively
    * its subdirectories using a stack, and store the results in the table.
    */
-  std::stack<String> s;
+  std::stack<Ptr<String>> s;
   Table<String> out;
-  s.push(String(path_));
+  s.push(std::make_shared<String>(String(path_)));
 
   while (!s.empty())
   {
-    String current_dir = s.top();
+    const auto current_dir = s.top();
     s.pop();
 
-    auto subdirs = subdirectories(current_dir);
+    const auto subdirs = subdirectories(*current_dir);
     out.push_back({current_dir, subdirs});
 
     /*

@@ -86,7 +86,7 @@ AST Parser::ast() const
 
 long Parser::eval() const
 {
-  const auto RPN = ast().post_order_search();
+  const auto RPN = ast().post_order_search(); // RPN is a vector of Operator*s
 
   /* Trivial case. */
   if (RPN.empty())
@@ -97,38 +97,40 @@ long Parser::eval() const
    * using a stack to store temporary results.
    */
   std::stack<long> numbers;
-  for (const auto& o : RPN)
+  for (const auto& ptr : RPN)
   {
-    if (o.is_number())
+    const auto& o = *ptr;
     {
-      numbers.push(o.eval());
-      continue;
+      if (o.is_number())
+      {
+        numbers.push(o.eval());
+        continue;
+      }
+
+      unsigned r = o.arity();
+      if (numbers.size() < r)
+        throw EvalException::ParserError();
+
+      if (r == 1)
+      {
+        long first = numbers.top();
+        numbers.pop();
+        numbers.push(o.eval(first));
+      }
+
+      else if (r == 2)
+      {
+        long second = numbers.top();
+        numbers.pop();
+        long first = numbers.top();
+        numbers.pop();
+        numbers.push(o.eval(first, second));
+      }
+
+      else // should not occur, since our AST is a valid BinaryTree
+        throw EvalException::BadOperatorImplementation();
     }
-
-    unsigned r = o.arity();
-    if (numbers.size() < r)
-      throw EvalException::ParserError();
-
-    if (r == 1)
-    {
-      long first = numbers.top();
-      numbers.pop();
-      numbers.push(o.eval(first));
-    }
-
-    else if (r == 2)
-    {
-      long second = numbers.top();
-      numbers.pop();
-      long first = numbers.top();
-      numbers.pop();
-      numbers.push(o.eval(first, second));
-    }
-
-    else // should not occur, since our AST is a valid BinaryTree
-      throw EvalException::BadOperatorImplementation();
   }
-
   /* Get the result. */
   if (numbers.size() != 1) // should not occur, since our AST is valid
     throw EvalException::ParserError();

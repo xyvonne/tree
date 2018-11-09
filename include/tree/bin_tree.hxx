@@ -8,26 +8,26 @@ BinaryTree<T>::BinaryTree(const Table<T>& table)
 {}
 
 template <typename T>
-BinaryTree<T>::BinaryTree(const T& t)
-  : Tree<T>(t, {})
+BinaryTree<T>::BinaryTree(const T& root)
+  : Tree<T>(root, {})
 {}
 
 template <typename T>
-BinaryTree<T>::BinaryTree(const T& t, const BinaryTree<T>& right)
-  : Tree<T>(t, {right})
+BinaryTree<T>::BinaryTree(const T& root, const BinaryTree<T>& right)
+  : Tree<T>(root, {right})
 {}
 
 template <typename T>
-BinaryTree<T>::BinaryTree(const T& t, \
+BinaryTree<T>::BinaryTree(const T& root, \
     const BinaryTree<T>& left, const BinaryTree<T>& right)
-: Tree<T>(t, {left, right})
+: Tree<T>(root, {left, right})
 {}
 
 template <typename T>
-std::vector<T> BinaryTree<T>::in_order_search() const
+std::vector<Ptr<T>> BinaryTree<T>::in_order_search() const
 {
   std::vector<size_t> sorted_ids = in_order_search_ids();
-  std::vector<T> out;
+  std::vector<Ptr<T>> out;
   for (const auto& id : sorted_ids)
     out.push_back(Tree<T>::nodes_[id].first);
   return out;
@@ -101,6 +101,7 @@ BinaryTree<U> BinaryTree<T>::map(std::function<U(T)> f) const
 {
   BinaryTree<U> tree;
   for (const auto& node : Tree<T>::nodes_)
-    tree.Tree<U>::nodes_.push_back({f(node.first), node.second});
+      tree.Tree<U>::nodes_.push_back(\
+          {std::make_shared<U>(f(*node.first)), node.second});
   return tree;
 }

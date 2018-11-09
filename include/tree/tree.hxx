@@ -8,9 +8,10 @@
 
 #include "tree_error.hh"
 
-template <typename T>
+  template <typename T>
 Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
-  : nodes_{{root, {0, 0}}} // parent's root is itself and has id == 0
+  // parent's root is itself and has id == 0
+  : nodes_{{std::make_shared<T>(root), {0, 0}}}
 {
   size_t offset = 1; // counter used for updating all node ids
   for (auto child : children)
@@ -27,29 +28,26 @@ Tree<T>::Tree(const T& root, const std::vector<Tree<T>>& children)
     child.nodes_[0].second[0] = 0; // root is child's parent
 
     /* Add the whole child tree structure to root. */
+#if 0
+    // Other possible implementation ...
     std::copy (child.nodes_.begin(), child.nodes_.end(), \
         std::back_inserter(nodes_));
-    /*
-     * CAUTION: the more common following implemenation produces a TERRIBLE
-     * ERROR LOG from the compiler when applied which T = Operator, a custom
-     * class.
-     * The former implementation works. Do not ask me why!!!
-     *
-     * nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
-     */
+#endif
+    nodes_.insert(nodes_.end(), child.nodes_.begin(), child.nodes_.end());
 
-    offset += child.size(); // update offset for the next child
+    /* Update offset for the next child. */
+    offset += child.size();
   }
 }
 
-template <typename T>
+  template <typename T>
 Tree<T>::Tree(const Table<T>& table)
 {
   size_t n = table.size();
   if (n > 0)
   {
     /* Store all different values in an array, for lookup purposes. */
-    std::vector<T> symbols;
+    std::vector<Ptr<T>> symbols;
     for (size_t i = 0; i < n; i++)
       symbols.push_back(table[i].first);
 
@@ -60,11 +58,11 @@ Tree<T>::Tree(const Table<T>& table)
       nodes_.push_back({symbols[i], {0, i}}); // parent id is not correct yet
 
       /* Add to the node the children ids. */
-      for (const T& symbol : table[i].second)
+      for (const auto& symbol : table[i].second)
       {
         /* Find the id corresponding to each child. */
         size_t j = 0;
-        while (j < n and not (symbols[j] == symbol))
+        while (j < n and not (*symbols[j] == *symbol))
           j++;
         if (j == n) // Symbol not found
         {
@@ -81,21 +79,19 @@ Tree<T>::Tree(const Table<T>& table)
 
     /* Fix all parent ids, as for now they are set to 0. */
     for (size_t i = 1; i < n; i++)
-    {
       for (size_t j = 2; j < nodes_[i].second.size(); j++)
       {
         /* nodes_[i].second[j] is j-th child of i */
         nodes_[nodes_[i].second[j]].second[0] = i;
       }
-    }
   }
 }
 
 template <typename T>
-std::vector<T> Tree<T>::breadth_first_search() const
+std::vector<Ptr<T>> Tree<T>::breadth_first_search() const
 {
   std::vector<size_t> sorted_ids = breadth_first_search_ids();
-  std::vector<T> out;
+  std::vector<Ptr<T>> out;
   for (const auto& id : sorted_ids)
     out.push_back(nodes_[id].first);
   return out;
@@ -180,7 +176,8 @@ Tree<U> Tree<T>::map(std::function<U(T)> f) const
 {
   Tree<U> tree;
   for (const auto& node : nodes_)
-    tree.Tree<U>::nodes_.push_back({f(node.first), node.second});
+    tree.Tree<U>::nodes_.push_back(\
+        {std::make_shared<U>(f(*node.first)), node.second});
   return tree;
 }
 
@@ -221,23 +218,23 @@ std::vector<size_t> Tree<T>::node_depths() const
 }
 
 template <typename T>
-std::vector<T> Tree<T>::pre_order_search() const
+std::vector<Ptr<T>> Tree<T>::pre_order_search() const
 {
   /*
    * Recall that our implementation is such that all nodes are already stored
    * w.r.t. pre-order search, so we only have to fetch their labels (values).
    */
-  std::vector<T> out;
+  std::vector<Ptr<T>> out;
   for (const auto& node : nodes_)
     out.push_back(node.first);
   return out;
 }
 
 template <typename T>
-std::vector<T> Tree<T>::post_order_search() const
+std::vector<Ptr<T>> Tree<T>::post_order_search() const
 {
   std::vector<size_t> sorted_ids = post_order_search_ids();
-  std::vector<T> out;
+  std::vector<Ptr<T>> out;
   for (const auto& id : sorted_ids)
     out.push_back(nodes_[id].first);
   return out;
@@ -289,7 +286,7 @@ std::string Tree<T>::represent(const TreePrintCompanion<T>& pc) const
   {
     s += "Node #" + std::to_string(node.second[1]);
     s += ": value: ";
-    T t = node.first;
+    const T& t = *node.first;
     if (node.second[1] == 0) // node.second[1]: node's id; 0 = root's id
       s += pc.print_root()(t);
     else if (is_leaf(node.second[1]))
@@ -365,7 +362,7 @@ std::vector<Tree<T>> Tree<T>::root_children() const
 }
 
 template <typename T>
-T Tree<T>::root_value() const
+Ptr<T> Tree<T>::root_value() const
 {
   if (size() == 0)
     throw TreeException::EmptyTree("[ERROR]" \
@@ -394,7 +391,7 @@ std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
   std::vector<bool> printable_columns(depth() + 1, false);
 
   /* Print the root. */
-  s += pc.print_root()(nodes_[0].first) + "\n";
+  s += pc.print_root()(*nodes_[0].first) + "\n";
   printable_columns[0] = true;
 
   /* Give self-explicit names for all characters and Unicode strings used. */
@@ -428,7 +425,7 @@ std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
       s += tee;
 
     /* Print the leaves and the inner nodes. */
-    T t = nodes_[i].first;
+    const T& t = *nodes_[i].first;
     s += hline + spaces;
     if (is_leaf(i))
       s += pc.print_leaf()(t);
@@ -443,7 +440,7 @@ std::string Tree<T>::to_string(const TreePrintCompanion<T>& pc) const
 
 /* Operator overloading. */
 
-template <typename T>
+  template <typename T>
 std::ostream& operator<<(std::ostream& os, const Tree<T>& tree)
 {
   return os << tree.to_string();

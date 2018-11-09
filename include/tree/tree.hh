@@ -2,6 +2,7 @@
 
 #include <functional> // std::function
 #include <iostream> // operator<< overloading
+#include <memory> // std::shared_ptr
 #include <string>
 #include <vector>
 
@@ -36,11 +37,11 @@
  *
  * A (generic) tree is implemented as follows. Its only attribute is the
  * vector of its nodes, sorted w.r.t. pre-order search. A node is a pair
- * consisting in a label (=value) and a vector of ids. The id of a node is its
- * rank (starting from 0) given by pre-order search. In the aforementioned
- * vector of ids, the parent id comes first (the parent of the root being the
- * root itself); then comes the id of the current node, and lastly the ids of
- * the node's children (in ascending order).
+ * consisting in a shared pointer to a label (=value) and a vector of ids.
+ * The id of a node is its rank (starting from 0) given by pre-order search.
+ * In the aforementioned vector of ids, the parent id comes first (the parent
+ * of the root being the root itself); then comes the id of the current node,
+ * and lastly the ids of the node's children (in ascending order).
  * For access to children, we rejected the common implementation with pointers,
  * because for tree mapping in particular, we want this accessing type be
  * independent from T (the type labelling nodes), and we did not want to use
@@ -49,19 +50,24 @@
 
 /**
  * Type aliases.
+ * Ptr<T>: shared pointers to T objects.
  * Node<T>: node in the tree.
  * Nodes<T>: vector of the nodes forming the tree.
  * Table<T>: table used for tree building:
  * see Tree<T>::Tree(const Table<T>& table) below.
  */
+
 template <typename T>
-using Node = std::pair<T, std::vector<size_t>>;
+using Ptr = std::shared_ptr<T>;
+
+template <typename T>
+using Node = std::pair<Ptr<T>, std::vector<size_t>>;
 
 template <typename T>
 using Nodes = std::vector<Node<T>>;
 
 template <typename T>
-using Table = std::vector<std::pair<T, std::vector<T>>>;
+using Table = std::vector<std::pair<Ptr<T>, std::vector<Ptr<T>>>>;
 
 /* Tree interface. */
 
@@ -73,8 +79,8 @@ class Tree
 
   public:
   /**
-   * Bottom-to-top constructor: provide the label for the new root,
-   * along with the children (as Trees) in a vector.
+   * Bottom-to-top constructor: provide a reference to the label for the new
+   * root, along with the children (as Trees) in a vector.
    */
   Tree(const T& root, const std::vector<Tree<T>>& children = {});
 
@@ -82,6 +88,7 @@ class Tree
    * Top-to-bottom constructor: construct a tree from a table.
    * If the table in invalid, throw a TreeException::InvalidTable exception.
    * An empty table (default case) can also be used to construct an empty tree.
+   * TODO: complete this part of the documentation
    */
   Tree(const Table<T>& table = {});
 
@@ -109,11 +116,11 @@ class Tree
    */
   std::vector<Tree<T>> root_children() const;
 
- /**
-   * Get the value (label) of the root.
+  /**
+   * Get a shared pointer to the value (label) of the root.
    * If the tree is empty, throw a TreeException::EmptyTree exception.
    */
-  T root_value() const;
+  Ptr<T> root_value() const;
 
   /**
    * Tree mapping: apply a map f to all nodes of the tree.
@@ -122,41 +129,52 @@ class Tree
   template <typename U>
     Tree<U> map(std::function<U(T)> f) const;
 
-  /// Perform the breadth-first search (BFS) on the tree.
-  std::vector<T> breadth_first_search() const;
+  /**
+   * Breadth-first search (BFS).
+   * Return a vector of shared pointers.
+   */
+  std::vector<Ptr<T>> breadth_first_search() const;
 
-  /// Perform the post-order search on the tree.
-  std::vector<T> post_order_search() const;
+  /**
+   * Post-order search.
+   * Return a vector of shared pointers.
+   */
+   std::vector<Ptr<T>> post_order_search() const;
 
-  /// Perform the pre-order search on the tree.
-  std::vector<T> pre_order_search() const;
+  /**
+   * Pre-order search.
+   * Return a vector of shared pointers.
+   */
+ std::vector<Ptr<T>> pre_order_search() const;
 
   /**
    * Developper-friendly representation of the tree
-   * (Python's equivalent of __repr__()).
+   * (equivalent of Python's __repr__()).
    * List all the nodes w.r.t. pre-order search,
    * along with their values and ids.
-   * The TreePrintCompanion specifies how the root, leaves and other inner
-   * nodes must be represented;
-   * please refer to the "tree_pc.hh" file for more details.
+   * The TreePrintCompanion specifies how the leaves, inner
+   * nodes and root must be represented;
+   * please refer to the documentation of that class for more details.
    */
   std::string represent(const TreePrintCompanion<T>& pc = {}) const;
 
   /**
    * User-friendly representation of the tree
-   * (Python's equivalent of __str__()).
-   * The result is very similar to the UNIX/DOS 'tree' utility's
+   * (equivalent of Python's __str__()).
+   * The result is very similar to the UNIX/MS-DOS 'tree' utility's
    * representation of a filesystem hierarchy.
-   * The TreePrintCompanion specifies how the leaves and the inner nodes
-   * must be represented, and how wide the columns must be spaced;
-   * please refer to the "tree_pc.hh" file for more details.
+   * The TreePrintCompanion specifies how the leaves, inner nodes
+   * nodes and root must be represented, and how wide the columns must
+   * be spaced;
+   * please refer to the documentation of that class for more details.
    */
   std::string to_string(const TreePrintCompanion<T>& pc = {}) const;
 
   protected:
   /**
-   * The nodes of the tree, stored in a vector
-   * (the full implementation of the nodes has been already discussed above).
+   * The nodes of the tree, stored in a vector.
+   * The full implementation of the nodes has been already discussed
+   * in the Tree documentation class.
    */
   Nodes<T> nodes_;
 

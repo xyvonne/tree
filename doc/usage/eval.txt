@@ -7,6 +7,8 @@ Numbers used must be integers (written in base 10). Parentheses and the
 following operators are supported: + (unary and binary), - (unary and binary),
 *, / (integer division), % (remainder) and ^ (power).
 If the expression includes spaces, they are ignored.
+The integer type used for numbers is C++ "long". Overflow may occur -- this is
+not tested.
 
 Exit codes:
 0: success

@@ -27,9 +27,10 @@ class BinaryTree : public Tree<T>
    * results in an undefined behavior.
    */
   public:
-  BinaryTree(const T& t);
-  BinaryTree(const T& t, const BinaryTree<T>& right);
-  BinaryTree(const T& t, const BinaryTree<T>& left, const BinaryTree<T>& right);
+  BinaryTree(const T& root);
+  BinaryTree(const T& root, const BinaryTree<T>& right);
+  BinaryTree(const T& root, const BinaryTree<T>& left, \
+      const BinaryTree<T>& right);
   BinaryTree(const Table<T>& table = {});
 
   /**
@@ -41,9 +42,10 @@ class BinaryTree : public Tree<T>
 
   /*
    * In-order search.
+   * Return a vector of shared pointers.
    * Recall that nodes without siblings are treated as right children.
    */
-  std::vector<T> in_order_search() const;
+  std::vector<Ptr<T>> in_order_search() const;
 
   private:
   /**
