@@ -9,46 +9,6 @@
 #include "tree_pc.hh"
 
 /**
- * We are working with trees of any size and nodes having any possible arity
- * (=number of children). The leaves are viewed as nodes with arity 0. All
- * nodes (more precisely, node values or labels) must be of the same type.
- * For technical reasons, this type must be endowed with an overloaded ==
- * operator.
- *
- * The supported (=public) methods include:
- * - the construction from the new root and the children trees, or from a
- *   table giving the children of each node;
- * - general information about the tree: size (=total number of nodes),
- *   depth (=height), number of leaves, number of inner nodes;
- * - information about the root: label, arity, and children (as whole trees);
- * - tree mapping;
- * - developer-friendly representation and pretty-printing;
- * - traversals: pre-, post-, and breadth-first searches. We chose to implement
- *   them without using recursion, in order to practice with common STL
- *   structures (vectors, stacks, queues).
- * Methods concerning a specific node other than the root are not part of
- * the interface. In particular, it is not possible to extract a node (other
- * than the root) nor a subtree (unless it is attached to the root), nor to
- * add a node (anywhere else than on the top of the tree).
- *
- *  As a special category of trees, binary trees are implemented through the
- *  derived class BinaryTree. Please refer to the documentation of this
- *  class for more details.
- *
- * A (generic) tree is implemented as follows. Its only attribute is the
- * vector of its nodes, sorted w.r.t. pre-order search. A node is a pair
- * consisting in a shared pointer to a label (=value) and a vector of ids.
- * The id of a node is its rank (starting from 0) given by pre-order search.
- * In the aforementioned vector of ids, the parent id comes first (the parent
- * of the root being the root itself); then comes the id of the current node,
- * and lastly the ids of the node's children (in ascending order).
- * For access to children, we rejected the common implementation with pointers,
- * because for tree mapping in particular, we want this accessing type be
- * independent from T (the type labelling nodes), and we did not want to use
- * the void* type in C++ either.
- */
-
-/**
  * Type aliases.
  * Ptr<T>: shared pointers to T objects.
  * Node<T>: node in the tree.
@@ -56,7 +16,6 @@
  * Table<T>: table used for tree building:
  * see Tree<T>::Tree(const Table<T>& table) below.
  */
-
 template <typename T>
 using Ptr = std::shared_ptr<T>;
 
@@ -86,10 +45,29 @@ class Tree
 
   /**
    * Top-to-bottom constructor: construct a tree from a table.
-   * If the table in invalid, throw a TreeException::InvalidTable exception.
-   * An empty table (default case) can also be used to construct an empty tree.
-   * TODO: complete this part of the documentation
-   */
+   * An empty table (default case) can be used to construct an empty tree.
+   * Otherwise, a table is a vector of (key, value) pairs, where each key is a
+   * pointer to an object of type T corresponding to a node value, and each
+   * value in the table is a vector of pointers to objects of type T
+   * corresponding to the children of the node given by the key.
+   * All the keys must be pointers to distinct objects, and all pointers
+   * corresponding to values in the table must point to distinct objects too.
+   * To check equality between pointed values, the type T must be endowed with
+   * an overloaded == operator.
+   * The first pair in the table corresponds to the root and its children.
+   * All leaves must appear in the table as (key, value) pairs, with value
+   * being the empty vector.
+   * It falls to the caller's duty to provide a valid table, as the constructor
+   * does not check it. Failing to comply with this may result in an undefined
+   * behavior. In the special case though where the table contains values
+   * which do not match with keys, a TreeException::InvalidTable is thrown
+   * and an empty tree is constructed.
+   * If you want to construct a tree with some nodes having the same value,
+   * you must give them distinct ids first; then, you can use this constructor
+   * to construct a temporary tree with node ids instead of true node values,
+   * and finally use tree mapping (with a custom map node id->node value) to
+   * construct the tree you want.
+   **/
   Tree(const Table<T>& table = {});
 
   /// Depth (=height) of the tree. Equals -1 for an empty tree.

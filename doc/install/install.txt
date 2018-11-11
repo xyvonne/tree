@@ -8,7 +8,7 @@ different compiler, though).
 For installation, just clone/download this repo, and run make at the root of
 the installation folder. Binary files are placed in this folder too.
 
-The Makefile provided includes the following rules:
+The provided Makefile includes the following rules:
 - all: default and main rule: generate all the 3 binary files: demo, eval, rd.
 - demo: generate the binary file demo.
 - eval: generate the binary file eval.

@@ -2,20 +2,6 @@
 
 #include <functional> // std::function
 
-/**
- * This class is a wrapper containing all the objects needed for
- * pretty-printing Trees. It has no other methods than trivial getters.
- * The attributes are:
- * - print_leaf: a function mapping T to std::string describing how to print
- *   the leaves,
- *  - print_node: object of the same type, for printing inner nodes,
- *  - print_root: object of the same type, for printing the root,
- *  - dashes: number of dashes to print on each line,
- *  - spaces: number of spaces to print before each node.
- *  All these attributes can be assigned default values to, see the
- *  constructor below.
- */
-
 /// Type alias for functions mapping T to std::string
 template <typename T>
 using PrintFunction = std::function<std::string(T)>;
@@ -50,7 +36,7 @@ class TreePrintCompanion
     unsigned spaces() const;
 
   private:
-    /// Attributes, as already discussed with the documentation class.
+    /// Attributes, as discussed with in the documentation class.
     PrintFunction<T> print_leaf_;
     PrintFunction<T> print_node_;
     PrintFunction<T> print_root_;
